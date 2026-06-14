@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($loginRes = Invoke-RestMethod -Uri \"http://localhost:8080/api/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"username\":\"duongcmntang@gmail.com\",\"password\":\"123456\"}'; $token = $loginRes.data.access_token; Write-Host \"TOKEN: $\\($token.Substring\\(0,40\\)\\)...\"; $features = Invoke-RestMethod -Uri \"http://localhost:8080/api/features?current=1&pageSize=50\" -Headers @{Authorization=\"Bearer $token\"}; $features.data.results | Select-Object _id, name, path | Format-Table)",
+      "PowerShell(python --version)",
+      "PowerShell(python -m pip install python-docx)",
+      "PowerShell(python c:\\\\Users\\\\laixu\\\\gen_report_p2.py)",
+      "PowerShell(python c:\\\\Users\\\\laixu\\\\gen_report_p3.py)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\laixu\\\\OneDrive\\\\Documents\\\\GitHub\\\\K66-D2-00-LaiXuanChinh-0182166\" -Directory)",
+      "Bash(Select-Object Name)"
+    ]
+  }
+}

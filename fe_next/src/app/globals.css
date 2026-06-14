@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: 76 29 149;
+}
+
+/* @layer base {
+    * {
+        @apply font-inter;
+    }
+
+    body {
+        @apply text-description bg-white;
+    }
+} */

@@ -1,0 +1,27 @@
+import React from "react";
+
+type FacebookSVGProps = {
+  className?: string;
+};
+
+const FacebookSVG: React.FC<FacebookSVGProps> = ({ className }) => {
+  return (
+    <svg
+      width="14"
+      height="24"
+      viewBox="0 0 14 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${className}`}
+    >
+      <path
+        d="M13 1.20312H9.72727C8.28064 1.20313 6.89325 1.78259 5.87033 2.81404C4.8474 3.84549 4.27273 5.24443 4.27273 6.70313V10.0031H1V14.4031H4.27273V23.2031H8.63636V14.4031H11.9091L13 10.0031H8.63636V6.70313C8.63636 6.41139 8.7513 6.1316 8.95588 5.92531C9.16047 5.71902 9.43795 5.60313 9.72727 5.60313H13V1.20312Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export default FacebookSVG;

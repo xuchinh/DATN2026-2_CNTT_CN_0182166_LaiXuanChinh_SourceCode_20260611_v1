@@ -1,0 +1,91 @@
+.blog-rich article {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28.8px;
+    text-align: left;
+}
+
+@media (max-width: 767px) {
+    .blog-rich article {
+        font-size: 16px;
+        line-height: 24px;
+    }
+}
+
+.blog-rich h1,
+.blog-rich h2,
+.blog-rich h3 {
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 57.6px;
+    text-align: left;
+    margin-bottom: 1em;
+}
+
+/* .blog-rich p {
+    margin-bottom: 1em;
+} */
+
+.blog-rich p span {
+    font-weight: bold;
+}
+
+.blog-rich ul {
+    margin: 0 0 1.5em 2em;
+
+}
+
+.blog-rich ol {
+    margin: 0 0 1.5em 2em;
+}
+
+.blog-rich ul li,
+.blog-rich ol li {
+    margin-bottom: 0.5em;
+}
+
+.blog-rich ul li::before {
+    content: '•';
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+.blog-rich img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto 1.5em;
+    border-radius: 20px;
+
+}
+
+.blog-rich blockquote {
+    margin: 1.5em 0;
+    padding: 10px 20px;
+    background-color: #313A5A;
+    border-radius: 20px;
+    padding: 55.43px 133.14px 55.43px 133.14px;
+}
+
+.blog-rich blockquote p {
+    max-width: 820.55;
+    margin: 0;
+    color: white;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 38.4px;
+    text-align: center;
+}
+
+@media (max-width: 767px) {
+    .blog-rich blockquote {
+        padding: 20px 40px;
+    }
+
+    .blog-rich blockquote p {
+        font-size: 18px;
+        line-height: 28.8px;
+    }
+}
