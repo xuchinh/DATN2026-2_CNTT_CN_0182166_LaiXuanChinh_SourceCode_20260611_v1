@@ -36,7 +36,7 @@ const BuildingTable = (props: IProps) => {
     }, [buildings]);
 
     const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString()} VNĐ`;
+        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
     const columns = [
         {
             title: "STT",

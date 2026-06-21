@@ -25,6 +25,9 @@ export class Review {
     buildingId: mongoose.Schema.Types.ObjectId;
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Blog.name })
     blogId: mongoose.Schema.Types.ObjectId;
+    // Soft-delete: ẩn đánh giá khỏi danh sách, vẫn giữ lại để kiểm duyệt / khôi phục
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const ReviewSchema = SchemaFactory.createForClass(Review);
 

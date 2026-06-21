@@ -117,16 +117,41 @@ export const handleUpdateRoom = async (data: any) => {
 };
 export const handleConfirmRoom = async (id: string, status: boolean, buildingId: string) => {
     const session = await auth();
+
+    const body = status
+        ? { _id: id, status: true }
+        : {
+            _id: id,
+            status: false,
+            userId: null,
+            fromDate: null,
+            toDate: null,
+            totalMonth: "0",
+            // [Câu 8] forceExpire=true: landlord chủ động xác nhận → bỏ qua server-side race guard
+            forceExpire: true,
+        };
+
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms`,
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${session?.user?.access_token}`,
         },
-        body: { _id: id, status }
+        body
     });
 
-    await handleUpdateIncome(buildingId);
+    // Khi chủ trọ XÁC NHẬN khách thuê (status=true): tự sinh hóa đơn điện/nước cho phòng.
+    // Phải gọi sau khi PATCH status=true vì backend chặn tạo hóa đơn cho phòng đang trống.
+    if (status) {
+        await handleCreateWaterBill(id);
+        await handleCreateElectricityBill(id);
+    }
+
+    // Khi phòng hết hạn, vẫn cần cập nhật income từ paymentHistory và revalidate chart
+    // Income vẫn đúng vì paymentHistory không bị xóa
+    if (buildingId) {
+        await handleUpdateIncome(buildingId);
+    }
     revalidateTag("list-rooms");
     return res;
 };
@@ -213,14 +238,15 @@ export const handleCreateElectricityBill = async (id: string) => {
 
 export const handleConfirmPaymen = async (id: string, statusPayment: string, buildingId: string) => {
     const session = await auth();
-    // const paymentsDate = new Date();
+    // Ghi nhận ngày xác nhận thanh toán khi chủ trọ confirm (statusPayment = '3')
+    const paymentsDate = statusPayment === '3' ? new Date() : undefined;
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms`,
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${session?.user?.access_token}`,
         },
-        body: { _id: id, statusPayment }
+        body: { _id: id, statusPayment, ...(paymentsDate && { paymentsDate }) }
     });
 
     await handleUpdateIncome(buildingId);
@@ -229,7 +255,6 @@ export const handleConfirmPaymen = async (id: string, statusPayment: string, bui
 };
 export const handleConfirmPaymenNoupdateIncome = async (id: string, statusPayment: string) => {
     const session = await auth();
-    // const paymentsDate = new Date();
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms`,
         method: "PATCH",
@@ -238,6 +263,8 @@ export const handleConfirmPaymenNoupdateIncome = async (id: string, statusPaymen
         },
         body: { _id: id, statusPayment }
     });
+    // Chart vẫn cần revalidate để hiển thị income đúng từ paymentHistory
+    revalidateTag("list-income-statistics");
     revalidateTag("list-rooms");
     return res;
 };
@@ -252,6 +279,7 @@ export const handleUpdateIncome = async (buildingId: string) => {
         },
     });
     revalidateTag("list-buildings");
+    revalidateTag("list-income-statistics"); // cập nhật biểu đồ doanh thu
     return res;
 };
 

@@ -13,7 +13,7 @@ const AccommodationSections = async () => {
             <BannerImage />
             <BannerContents
                 heading="Tìm trọ"
-                description="Nơi đây là nơi để mọi người tìm trọ một cách dẽ dàng, là nơi để găn kết người cần tìm trọ và chủ trọ có thể tìm thấy nhâu."
+                description="Nơi đây là nơi để mọi người tìm trọ một cách dẽ dàng, là nơi để găn kết người cần tìm trọ và chủ trọ có thể tìm thấy nhau."
             />
             {SHOW_MAP && <AccommodationMap />}
             <AccommodationSearch session={session} />

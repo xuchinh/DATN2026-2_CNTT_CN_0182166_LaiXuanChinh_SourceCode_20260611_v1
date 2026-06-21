@@ -28,6 +28,9 @@ export class Blog {
     buildingId: mongoose.Schema.Types.ObjectId;
     @Prop()
     rating: string;
+    // Soft-delete: ẩn bài viết khỏi danh sách, vẫn giữ lại để khôi phục / kiểm duyệt
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 

@@ -49,6 +49,8 @@ export class PackagesService {
         { name: { $regex: query.search, $options: 'i' } },
       ];
     }
+    // Ẩn gói đã soft-delete khỏi danh sách bán (người đã mua vẫn dùng tiếp qua findById)
+    filter.isDeleted = { $ne: true };
 
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
@@ -87,7 +89,8 @@ export class PackagesService {
 
   remove(_id: string) {
     if (mongoose.isValidObjectId(_id)) {
-      return this.packageModel.deleteOne({ _id })
+      // Soft-delete: gỡ gói khỏi trang bán nhưng người đã mua (user.packageId) vẫn dùng tiếp
+      return this.packageModel.updateOne({ _id }, { isDeleted: true })
     } else {
       throw new BadRequestException("_id không đúng định dạng")
     }

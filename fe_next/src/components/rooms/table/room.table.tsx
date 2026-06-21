@@ -1,7 +1,8 @@
 'use client'
 
+import React from "react";
 import { CheckOutlined, CloseOutlined, DeleteTwoTone, DislikeOutlined, EditTwoTone, FileDoneOutlined, FileSearchOutlined, LikeOutlined, SwapOutlined } from "@ant-design/icons";
-import { Button, Input, Popconfirm, Select, Table, Tooltip } from "antd"
+import { Button, Dropdown, Input, Modal, Popconfirm, Select, Table, Tooltip } from "antd"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from "react";
 import { handleBuilding, handleConfirmPaymen, handleConfirmPaymenNoupdateIncome, handleConfirmRoom, handleDeleteRoom, handleUpdateRoom, handleUser } from "../requests/room.requests";
@@ -48,8 +49,10 @@ const RoomTable = (props: IProps) => {
 
     const [isSelectUsersModalOpen, setIsSelectUsersModalOpen] = useState<boolean>(false);
     const [dataSelectUser, setDataSelectUser] = useState<any>(null);
-    const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString()} VNĐ`;
+    const formatCurrency = (value: string | number) => {
+        const num = Math.round(Number(value));
+        return `${num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')} VNĐ`;
+    };
     useEffect(() => {
         const fetchbuildingOptions = async () => {
             const resUser = await handleUser()
@@ -179,70 +182,43 @@ const RoomTable = (props: IProps) => {
         {
             title: 'Thanh toán',
             render: (record: any) => {
-                if (record?.statusPayment === '3') {
-                    return <Popconfirm
-                        placement="leftTop"
-                        title={"Hết hạn thanh toán"}
-                        description={"Bạn có chắc chắn muốn xác nhận người thuê này đã hết hạn thanh toán ?"}
-                        onConfirm={async () => await handleConfirmPaymenNoupdateIncome(record._id, '1')}
-                        okText="Xác nhận"
-                        cancelText="Hủy"
-                    >
-                        <Tooltip title="Hết hạn thanh toán">
-                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium cursor-pointer"><CheckOutlined /></span>
+                const current = record?.statusPayment || '1';
+                const stateConfig: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
+                    '1': { label: 'Chưa thanh toán', icon: <CloseOutlined />, className: 'bg-red-100 text-red-800' },
+                    '2': { label: 'Chờ xác nhận', icon: <SwapOutlined />, className: 'bg-yellow-100 text-yellow-800' },
+                    '3': { label: 'Đã thanh toán', icon: <CheckOutlined />, className: 'bg-green-100 text-green-800' },
+                };
+                const menuItems = ['1', '2', '3'].map(key => ({
+                    key,
+                    label: stateConfig[key].label,
+                    disabled: key === current,
+                }));
+                const handleMenuClick = ({ key }: { key: string }) => {
+                    if (key === current) return;
+                    Modal.confirm({
+                        title: 'Xác nhận đổi trạng thái',
+                        content: `Bạn có chắc muốn chuyển sang "${stateConfig[key].label}"?`,
+                        okText: 'Xác nhận',
+                        cancelText: 'Hủy',
+                        onOk: async () => {
+                            if (key === '3') {
+                                await handleConfirmPaymen(record._id, '3', record.buildingId);
+                            } else {
+                                await handleConfirmPaymenNoupdateIncome(record._id, key);
+                            }
+                        },
+                    });
+                };
+                const cfg = stateConfig[current];
+                return (
+                    <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} trigger={['click']} placement="bottomLeft">
+                        <Tooltip title="Click để đổi trạng thái">
+                            <span className={`${cfg.className} px-3 py-1 rounded-full text-sm font-medium cursor-pointer`}>
+                                {cfg.icon}
+                            </span>
                         </Tooltip>
-                    </Popconfirm>
-                }
-                else if (record?.statusPayment === '2') {
-                    return <Popconfirm
-                        placement="leftTop"
-                        title={"Xác nhận thanh toán"}
-                        description={"Bạn có chắc chắn muốn xác nhận người thuê này đã thanh toán ?"}
-                        onConfirm={async () => await handleConfirmPaymen(record._id, '3', record.buildingId)}
-                        okText="Xác nhận"
-                        cancelText="Hủy"
-                    >
-                        <Tooltip title="Xác nhận đã nhận thanh toán">
-                            <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 cursor-pointer"><SwapOutlined /></span>
-                        </Tooltip>
-                    </Popconfirm>
-                }
-                else if (record?.statusPayment === '1') {
-                    return <Popconfirm
-                        placement="leftTop"
-                        title={"Xác nhận đã thanh toán"}
-                        description={"Bạn có chắc chắn muốn xác nhận người thuê này đã thanh toán ?"}
-                        onConfirm={async () => await handleConfirmPaymenNoupdateIncome(record._id, '2')}
-                        okText="Xác nhận"
-                        cancelText="Hủy"
-                    >
-                        <Tooltip title="Xác nhận đã thanh toán">
-                            <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 cursor-pointer"><CloseOutlined /></span>
-                        </Tooltip>
-                    </Popconfirm>
-                }
-                // if (record?.statusPayment === true) {
-                //     return <>
-                //         <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium "><CheckOutlined /></span>
-                //         <Popconfirm
-                //             className="ml-[5px]"
-                //             placement="leftTop"
-                //             title={"Xác nhận chưa thanh toán"}
-                //             description={"Bạn có chắc chắn muốn xác nhận người thuê này chưa thanh toán ?"}
-                //             onConfirm={async () => await handleConfirmPaymen(record._id, false, record.buildingId)}
-                //             okText="Xác nhận"
-                //             cancelText="Hủy"
-                //         >
-                //             <Tooltip title="Xác nhận chưa thanh toán thuê">
-                //                 <span style={{ cursor: "pointer" }}>
-                //                     <DislikeOutlined twoToneColor="#1890ff" />
-                //                 </span>
-                //             </Tooltip>
-                //         </Popconfirm>
-                //     </>
-                // }
-                // else return <><span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><CloseOutlined /></span>
-                // </>
+                    </Dropdown>
+                );
             }
         },
         {

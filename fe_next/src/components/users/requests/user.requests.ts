@@ -320,6 +320,38 @@ export const handleConfirmPaymenRoomUser = async (id: string, statusPayment: str
     return res;
 };
 
+// Super admin xác nhận đã nhận thanh toán mua gói → cấp quyền ADMIN cho user quản lý nhà trọ
+export const handleConfirmUserPayment = async (id: string) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`,
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { _id: id, statusPayment: true, role: "ADMIN" }
+    });
+
+    revalidateTag("list-users");
+    return res;
+};
+
+// Super admin hủy gói của user → gói hết hiệu lực + tước quyền quản lý (về USERS)
+export const handleCancelPackageUser = async (id: string) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`,
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { _id: id, status: false, statusPayment: false, role: "USERS" }
+    });
+
+    revalidateTag("list-users");
+    return res;
+};
+
 export const handleConfirmPackageUser = async (id: string, status: boolean) => {
     const session = await auth();
     const res = await sendRequest<IBackendRes<any>>({

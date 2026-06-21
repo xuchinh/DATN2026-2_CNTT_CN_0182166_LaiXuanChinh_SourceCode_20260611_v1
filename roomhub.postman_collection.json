@@ -1,0 +1,1347 @@
+{
+  "info": {
+    "name": "RoomHub API",
+    "description": "DATN - Hệ thống quản lý phòng trọ RoomHub\nBase URL: http://localhost:8080\n\nHướng dẫn:\n1. Chạy [Auth] Login trước\n2. Token tự lưu vào {{token}}\n3. Các ID tự lưu sau mỗi request Create",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "buildingId", "value": "", "type": "string" },
+    { "key": "roomId", "value": "", "type": "string" },
+    { "key": "packageId", "value": "", "type": "string" },
+    { "key": "featureId", "value": "", "type": "string" },
+    { "key": "reviewId", "value": "", "type": "string" },
+    { "key": "blogId", "value": "", "type": "string" },
+    { "key": "vehicleId", "value": "", "type": "string" },
+    { "key": "electricityBillId", "value": "", "type": "string" },
+    { "key": "waterBillId", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"name\": \"Nguyễn Văn A\",\n  \"email\": \"nguyenvana@gmail.com\",\n  \"password\": \"123456\",\n  \"phone\": \"0901234567\",\n  \"address\": \"123 Đường ABC, Q.1, TP.HCM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('token', res.data.access_token);",
+                  "  console.log('✅ Token saved');",
+                  "}",
+                  "if (res.data && res.data.user && res.data.user._id) {",
+                  "  pm.collectionVariables.set('userId', res.data.user._id);",
+                  "  console.log('✅ UserId saved:', res.data.user._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"username\": \"nguyenvana@gmail.com\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify Account (Check Code)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/check-code",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "check-code"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{userId}}\",\n  \"code\": \"PASTE_CODE_FROM_EMAIL\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Retry Active (Gửi lại email xác thực)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/retry-active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "retry-active"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"email\": \"nguyenvana@gmail.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Forgot Password (Gửi email đặt lại)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/retry-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "retry-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"email\": \"nguyenvana@gmail.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "change-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"email\": \"nguyenvana@gmail.com\",\n  \"code\": \"PASTE_CODE_FROM_EMAIL\",\n  \"password\": \"newpass123\",\n  \"confirmPassword\": \"newpass123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User (Admin tạo chủ trọ)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('userId', res.data._id);",
+                  "  console.log('✅ UserId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"name\": \"Trần Văn Chủ Trọ\",\n  \"email\": \"chutro@gmail.com\",\n  \"password\": \"123456\",\n  \"phone\": \"0912345678\",\n  \"address\": \"456 Đường XYZ, Q.3, TP.HCM\",\n  \"role\": \"ADMIN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{userId}}\",\n  \"name\": \"Tên Đã Cập Nhật\",\n  \"phone\": \"0999888777\",\n  \"address\": \"789 Đường Mới, Q.7, TP.HCM\",\n  \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Buildings",
+      "item": [
+        {
+          "name": "Get All Buildings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings?current=1&pageSize=10&userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "userId", "value": "{{userId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Building",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('buildingId', res.data._id);",
+                  "  console.log('✅ BuildingId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"name\": \"Nhà Trọ Số 1\",\n  \"address\": \"123 Đường ABC, Q.1, TP.HCM\",\n  \"totalRooms\": 10,\n  \"numberOfPeopleRoom\": \"2\",\n  \"priceOfRoom\": \"2500000\",\n  \"rating\": \"5\",\n  \"shippingPrice\": \"100000\",\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Building",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{buildingId}}\",\n  \"name\": \"Nhà Trọ Số 1 (Cập Nhật)\",\n  \"address\": \"123 Đường ABC, Q.1, TP.HCM\",\n  \"priceOfRoom\": \"3000000\",\n  \"shippingPrice\": \"150000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Building",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/{{buildingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", "{{buildingId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Building Income",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/{{buildingId}}/income-update",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", "{{buildingId}}", "income-update"]
+            }
+          }
+        },
+        {
+          "name": "Statistics - Monthly Income",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/{{buildingId}}/income-statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", "{{buildingId}}", "income-statistics"]
+            }
+          }
+        },
+        {
+          "name": "Statistics - Water",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/{{buildingId}}/water-statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", "{{buildingId}}", "water-statistics"]
+            }
+          }
+        },
+        {
+          "name": "Statistics - Electricity",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/{{buildingId}}/electricity-statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", "{{buildingId}}", "electricity-statistics"]
+            }
+          }
+        },
+        {
+          "name": "Statistics - Vehicles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/buildings/{{buildingId}}/vehicles-statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buildings", "{{buildingId}}", "vehicles-statistics"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms?current=1&pageSize=10&buildingId={{buildingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "buildingId", "value": "{{buildingId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Rooms By Status (đang cho thuê)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms?current=1&pageSize=10&buildingId={{buildingId}}&status=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "buildingId", "value": "{{buildingId}}" },
+                { "key": "status", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Room",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('roomId', res.data._id);",
+                  "  console.log('✅ RoomId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"code\": \"P101\",\n  \"acreage\": \"25\",\n  \"totalPeople\": \"2\",\n  \"price\": \"4000000\",\n  \"payment\": \"4000000\",\n  \"kitchen\": true,\n  \"toilet\": true,\n  \"washroom\": true,\n  \"buildingId\": \"{{buildingId}}\",\n  \"statusPayment\": \"1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Room (Thông tin cơ bản)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{roomId}}\",\n  \"price\": \"4500000\",\n  \"acreage\": \"30\",\n  \"kitchen\": true,\n  \"toilet\": true,\n  \"washroom\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Tenant (Gán khách vào phòng)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{roomId}}\",\n  \"userId\": \"{{userId}}\",\n  \"status\": true,\n  \"fromDate\": \"2025-06-01\",\n  \"totalMonth\": \"3\",\n  \"statusPayment\": \"1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Payment - Khách đóng tiền (→ status '2')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{roomId}}\",\n  \"statusPayment\": \"2\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Payment - Chủ xác nhận đã nhận (→ status '3')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{roomId}}\",\n  \"statusPayment\": \"3\",\n  \"paymentsDate\": \"2025-06-15T10:00:00.000Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Expire Room (Xác nhận hết hạn - trả về trống)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{roomId}}\",\n  \"status\": false,\n  \"userId\": null,\n  \"fromDate\": null,\n  \"toDate\": null,\n  \"totalMonth\": \"0\",\n  \"statusPayment\": \"1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms", "{{roomId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Water Bills",
+      "item": [
+        {
+          "name": "Get All Water Bills",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Water Bills By Room",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills?current=1&pageSize=10&roomId={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "roomId", "value": "{{roomId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Water Bill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('waterBillId', res.data._id);",
+                  "  console.log('✅ WaterBillId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"fromDate\": \"2025-06-01T00:00:00.000Z\",\n  \"toDate\": \"2025-06-30T23:59:59.000Z\",\n  \"status\": \"1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Water Bill (Nhập số nước + giá)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{waterBillId}}\",\n  \"amount\": \"12\",\n  \"waterPrice\": \"15000\",\n  \"payment\": \"180000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Water Bill - Khách đóng (→ '2')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{waterBillId}}\",\n  \"status\": \"2\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Water Bill - Chủ xác nhận (→ '3')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{waterBillId}}\",\n  \"status\": \"3\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Water Bill",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/water-bills/{{waterBillId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "water-bills", "{{waterBillId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Electricity Bills",
+      "item": [
+        {
+          "name": "Get All Electricity Bills",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Electricity Bills By Room",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills?current=1&pageSize=10&roomId={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "roomId", "value": "{{roomId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Electricity Bill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('electricityBillId', res.data._id);",
+                  "  console.log('✅ ElectricityBillId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"fromDate\": \"2025-06-01T00:00:00.000Z\",\n  \"toDate\": \"2025-06-30T23:59:59.000Z\",\n  \"status\": \"1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Electricity Bill (Nhập số điện + giá)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{electricityBillId}}\",\n  \"amount\": \"120\",\n  \"eletricPrice\": \"3500\",\n  \"payment\": \"420000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Electricity Bill - Khách đóng (→ '2')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{electricityBillId}}\",\n  \"status\": \"2\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Electricity Bill - Chủ xác nhận (→ '3')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{electricityBillId}}\",\n  \"status\": \"3\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Electricity Bill",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/electricity-bills/{{electricityBillId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "electricity-bills", "{{electricityBillId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "Get All Vehicles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Vehicles By Room",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles?current=1&pageSize=10&roomId={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "roomId", "value": "{{roomId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('vehicleId', res.data._id);",
+                  "  console.log('✅ VehicleId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"type\": \"Xe máy\",\n  \"licensePlate\": \"51G1-12345\",\n  \"shippingPrice\": \"100000\",\n  \"roomId\": \"{{roomId}}\",\n  \"userId\": \"{{userId}}\",\n  \"status\": \"1\",\n  \"fromDate\": \"2025-06-01T00:00:00.000Z\",\n  \"toDate\": \"2025-07-01T00:00:00.000Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Vehicle",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{vehicleId}}\",\n  \"type\": \"Ô tô\",\n  \"licensePlate\": \"51A-99999\",\n  \"shippingPrice\": \"200000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Vehicle Payment - Khách đóng (→ '2')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{vehicleId}}\",\n  \"status\": \"2\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Vehicle Payment - Chủ xác nhận (→ '3')",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{vehicleId}}\",\n  \"status\": \"3\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Vehicle",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles", "{{vehicleId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Packages",
+      "item": [
+        {
+          "name": "Get All Packages",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/packages?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "packages"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Package",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('packageId', res.data._id);",
+                  "  console.log('✅ PackageId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "packages"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"code\": \"PKG_BASIC\",\n  \"name\": \"Gói Cơ Bản\",\n  \"description\": \"Quản lý tối đa 5 tòa nhà, 50 phòng\",\n  \"price\": \"199000\",\n  \"totalBuilding\": \"5\",\n  \"isActive\": true,\n  \"features\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Package",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/packages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "packages"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{packageId}}\",\n  \"name\": \"Gói Cơ Bản Nâng Cấp\",\n  \"price\": \"249000\",\n  \"totalBuilding\": \"10\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Package",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/packages/{{packageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "packages", "{{packageId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Features",
+      "item": [
+        {
+          "name": "Get All Features",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/features?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "features"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Feature",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('featureId', res.data._id);",
+                  "  console.log('✅ FeatureId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/features",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "features"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"name\": \"Quản lý hóa đơn điện\",\n  \"description\": \"Cho phép tạo và theo dõi hóa đơn tiền điện hàng tháng\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Feature",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/features",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "features"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{featureId}}\",\n  \"name\": \"Tên tính năng mới\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Feature",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/features/{{featureId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "features", "{{featureId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get All Reviews",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('reviewId', res.data._id);",
+                  "  console.log('✅ ReviewId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"rating\": \"5\",\n  \"comment\": \"Phòng sạch sẽ, thoáng mát, chủ trọ nhiệt tình\",\n  \"expression\": \"happy\",\n  \"userId\": \"{{userId}}\",\n  \"buildingId\": \"{{buildingId}}\",\n  \"blogId\": \"{{blogId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{reviewId}}\",\n  \"rating\": \"4\",\n  \"comment\": \"Cập nhật đánh giá - phòng tốt\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/{{reviewId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", "{{reviewId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rep Review (Phản hồi đánh giá)",
+      "item": [
+        {
+          "name": "Get All Rep Reviews",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rep-review?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rep-review"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Rep Review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rep-review",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rep-review"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"comment\": \"Cảm ơn bạn đã tin tưởng và đánh giá tích cực!\",\n  \"reviewId\": \"{{reviewId}}\",\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Blog",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('blogId', res.data._id);",
+                  "  console.log('✅ BlogId saved:', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"title\": \"Phòng trọ giá rẻ gần trường Đại học\",\n  \"content\": \"Phòng trọ sạch sẽ, thoáng mát, an ninh tốt. Diện tích 25m2, có ban công riêng. Gần trường, chợ và siêu thị.\",\n  \"image\": \"https://example.com/room-image.jpg\",\n  \"buildingId\": \"{{buildingId}}\",\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"{{blogId}}\",\n  \"title\": \"Tiêu đề bài viết đã cập nhật\",\n  \"content\": \"Nội dung mới được cập nhật...\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/blogs/{{blogId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "blogs", "{{blogId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Offers",
+      "item": [
+        {
+          "name": "Get All Offers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/offers?current=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offers"],
+              "query": [
+                { "key": "current", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Offer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offers"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"title\": \"Giảm 10% tháng đầu\",\n  \"description\": \"Ưu đãi đặc biệt cho khách thuê mới trong tháng 6\",\n  \"discount\": \"10\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Offer",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offers"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"_id\": \"OFFER_ID_HERE\",\n  \"title\": \"Tiêu đề ưu đãi mới\",\n  \"discount\": \"15\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Offer",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/offers/OFFER_ID_HERE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offers", "OFFER_ID_HERE"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

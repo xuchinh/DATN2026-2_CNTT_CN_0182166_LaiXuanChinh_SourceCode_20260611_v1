@@ -5,32 +5,54 @@ import { InjectModel } from '@nestjs/mongoose';
 import { WaterBill, WaterBillDocument } from './schemas/water_bill.schemas';
 import mongoose, { Model } from 'mongoose';
 import aqp from 'api-query-params';
+import dayjs from 'dayjs';
+import { Room } from '../rooms/schemas/room.entity';
 
 @Injectable()
 export class WaterBillsService {
   constructor(
     @InjectModel(WaterBill.name) private waterBillModel: Model<WaterBillDocument>,
+    @InjectModel(Room.name) private roomModel: Model<Room>,
   ) { }
 
   async create(createWaterBillDto: CreateWaterBillDto) {
     const {
       waterPrice,
       amount,
-      // payment,
       userId,
       roomId,
       fromDate,
       toDate
     } = createWaterBillDto;
+
+    // [Câu 3] Không tạo hóa đơn cho phòng đang trống
+    const room = await this.roomModel.findById(roomId).select('status code').lean();
+    if (!room) throw new BadRequestException("Phòng không tồn tại.");
+    if (!room.status) {
+      throw new BadRequestException(`Phòng ${room.code} đang trống. Không thể tạo hóa đơn nước cho phòng chưa có khách.`);
+    }
+
+    // [Câu 7] Không tạo 2 hóa đơn nước cùng tháng cho cùng phòng
+    const billDate = fromDate ? new Date(fromDate) : new Date();
+    const startOfMonth = dayjs(billDate).startOf('month').toDate();
+    const endOfMonth = dayjs(billDate).endOf('month').toDate();
+    const existing = await this.waterBillModel.findOne({
+      roomId,
+      fromDate: { $gte: startOfMonth, $lte: endOfMonth },
+      isDeleted: { $ne: true },
+    });
+    if (existing) {
+      throw new BadRequestException(`Hóa đơn nước tháng ${dayjs(billDate).format('MM/YYYY')} đã tồn tại cho phòng này.`);
+    }
+
     const waterBill = await this.waterBillModel.create({
       waterPrice,
       amount,
-      // payment,
       userId,
       roomId,
       fromDate,
       toDate
-    })
+    });
     return {
       _id: waterBill._id
     }
@@ -40,6 +62,8 @@ export class WaterBillsService {
     const { filter, sort } = aqp(query);
     if (filter.current) delete filter.current;
     if (filter.pageSize) delete filter.pageSize;
+    // Ẩn hóa đơn đã soft-delete khỏi danh sách
+    filter.isDeleted = { $ne: true };
 
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
@@ -83,7 +107,8 @@ export class WaterBillsService {
 
   remove(_id: string) {
     if (mongoose.isValidObjectId(_id)) {
-      return this.waterBillModel.deleteOne({ _id })
+      // Soft-delete: giữ lại lịch sử doanh thu nước (hóa đơn status '3')
+      return this.waterBillModel.updateOne({ _id }, { isDeleted: true })
     } else {
       throw new BadRequestException("_id không đúng định dạng")
     }

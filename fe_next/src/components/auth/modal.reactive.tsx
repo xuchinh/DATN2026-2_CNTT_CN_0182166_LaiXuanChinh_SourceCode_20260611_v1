@@ -104,7 +104,7 @@ const ModalReactive = (props: any) => {
                     <>
 
                         <div style={{ margin: "20px 0" }}>
-                            <p>Tải khoản của bạn chưa được kích hoạt</p>
+                            <p>Tài khoản của bạn chưa được kích hoạt</p>
                         </div>
                         <Form
                             name="verify"

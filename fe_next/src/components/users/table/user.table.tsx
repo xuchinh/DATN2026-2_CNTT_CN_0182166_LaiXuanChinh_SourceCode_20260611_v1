@@ -6,7 +6,8 @@ import {
     DeleteTwoTone,
     EditTwoTone,
     FileDoneOutlined,
-    LikeOutlined
+    LikeOutlined,
+    SwapOutlined
 } from "@ant-design/icons";
 import {
     Button,
@@ -21,8 +22,9 @@ import { useEffect, useState } from "react";
 import UserCreate from "./user.create";
 import UserUpdate from "./user.update";
 import {
-    handleConfirmPackageUser,
+    handleCancelPackageUser,
     handleConfirmUpdateUserPayment,
+    handleConfirmUserPayment,
     handleDeleteUserAction,
     handlePackageUser
 } from "@/components/users/requests/user.requests";
@@ -66,7 +68,7 @@ const UserTable = (props: IProps) => {
         fetchPackageOptions();
     }, []);
     const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString()} VNĐ`;
+        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
     const columns = [
         {
             title: "STT",
@@ -103,30 +105,65 @@ const UserTable = (props: IProps) => {
             render: formatCurrency,
         },
         {
+            title: 'Thanh toán',
+            render: (record: any) => {
+                // Đã xác nhận thanh toán mua gói
+                if (record?.statusPayment === true) {
+                    return (
+                        <Tooltip title="Đã xác nhận thanh toán">
+                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium"><CheckOutlined /></span>
+                        </Tooltip>
+                    );
+                }
+                // Có gói đang hiệu lực nhưng chưa xác nhận → chờ super admin duyệt để cấp quyền quản lý
+                if (record?.packageId && record?.status === true) {
+                    return (
+                        <Popconfirm
+                            placement="leftTop"
+                            title={"Xác nhận thanh toán mua gói"}
+                            description={"Xác nhận đã nhận thanh toán? Người dùng sẽ được cấp quyền quản lý nhà trọ."}
+                            onConfirm={async () => {
+                                await handleConfirmUserPayment(record._id);
+                                replace(pathname); // refresh bảng để hiển thị trạng thái mới
+                            }}
+                            okText="Xác nhận"
+                            cancelText="Hủy"
+                        >
+                            <Tooltip title="Chờ xác nhận thanh toán">
+                                <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium cursor-pointer"><SwapOutlined /> Chờ xác nhận</span>
+                            </Tooltip>
+                        </Popconfirm>
+                    );
+                }
+                // Chưa mua gói
+                return <span className="text-gray-400 text-sm">Chưa mua gói</span>;
+            }
+        },
+        {
             title: 'Hạn gói',
             render: (record: any) => {
+                // Còn hạn → cho super admin bấm để hủy gói (tước quyền quản lý)
                 if (record?.status === true) {
-                    return <> <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium "><CheckOutlined /></span>
-                        {record?.toDate === newDate && (
-                            <Popconfirm
-                                placement="leftTop"
-                                title={"Người thuê đã hết hạn hạn gói dịch vụ"}
-                                description={"Bạn có chắc chắn muốn xác nhận người thuê đã hết hạn hạn gói dịch vụ?"}
-                                onConfirm={async () => await handleConfirmPackageUser(record._id, false)}
-                                okText="Xác nhận"
-                                cancelText="Hủy"
-                            >
-                                <Tooltip title="Người thuê đã hết hạn hạn gói dịch vụ">
-                                    <span style={{ cursor: "pointer" }}>
-                                        <LikeOutlined twoToneColor="#1890ff" />
-                                    </span>
-                                </Tooltip>
-                            </Popconfirm>
-                        )}
-                    </>
+                    return (
+                        <Popconfirm
+                            placement="leftTop"
+                            title={"Hủy gói của người dùng"}
+                            description={"Bạn có chắc muốn hủy gói? Người dùng sẽ bị tước quyền quản lý nhà trọ."}
+                            onConfirm={async () => {
+                                await handleCancelPackageUser(record._id);
+                                replace(pathname); // refresh bảng để hiển thị trạng thái mới
+                            }}
+                            okText="Xác nhận"
+                            cancelText="Hủy"
+                        >
+                            <Tooltip title="Hủy gói / tước quyền">
+                                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium cursor-pointer"><CheckOutlined /></span>
+                            </Tooltip>
+                        </Popconfirm>
+                    );
                 }
-                else return <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><CloseOutlined /></span>
-
+                // Đã hết hạn / đã hủy
+                return <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><CloseOutlined /></span>;
             }
         },
         {

@@ -23,7 +23,7 @@ export class BlogsService {
       buildingId
     } = createBlogDto;
     if (buildingId) {
-      const existedBlog = await this.blogModel.findOne({ buildingId });
+      const existedBlog = await this.blogModel.findOne({ buildingId, isDeleted: { $ne: true } });
       if (existedBlog) {
         throw new BadRequestException('Mỗi nhà trọ (building) chỉ được tạo 1 blog.');
       }
@@ -48,6 +48,8 @@ export class BlogsService {
     const { filter, sort } = aqp(query);
     if (filter.current) delete filter.current;
     if (filter.pageSize) delete filter.pageSize;
+    // Ẩn bài viết đã soft-delete khỏi danh sách
+    filter.isDeleted = { $ne: true };
 
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
@@ -85,7 +87,8 @@ export class BlogsService {
 
   remove(_id: string) {
     if (mongoose.isValidObjectId(_id)) {
-      return this.blogModel.deleteOne({ _id })
+      // Soft-delete: ẩn bài viết, vẫn giữ lại để khôi phục
+      return this.blogModel.updateOne({ _id }, { isDeleted: true })
     } else {
       throw new BadRequestException("_id không đúng định dạng")
     }

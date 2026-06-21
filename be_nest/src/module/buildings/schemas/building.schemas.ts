@@ -26,5 +26,8 @@ export class Building {
     income: string; //tổng thu nhập
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
     userId: mongoose.Schema.Types.ObjectId // id chủ nhà
+    // Soft-delete: ẩn nhà khỏi danh sách nhưng giữ lại để không mất thống kê doanh thu
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const BuildingSchema = SchemaFactory.createForClass(Building);

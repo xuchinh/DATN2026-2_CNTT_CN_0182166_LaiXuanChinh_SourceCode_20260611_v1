@@ -22,6 +22,9 @@ export class RepReview {
     reviewId: mongoose.Schema.Types.ObjectId;
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: RepReview.name })
     repReviewId: mongoose.Schema.Types.ObjectId;
+    // Soft-delete: ẩn phản hồi khỏi danh sách, vẫn giữ lại để kiểm duyệt / khôi phục
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const RepReviewSchema = SchemaFactory.createForClass(RepReview);
 

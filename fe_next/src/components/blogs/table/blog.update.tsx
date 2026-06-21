@@ -3,7 +3,7 @@ import {
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { handleUpdateBlogs } from '../requests/blog.requests';
-import { UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UploadOutlined, PlusOutlined, DeleteOutlined, WarningOutlined } from '@ant-design/icons';
 
 interface IProps {
     isUpdateModalOpen: boolean;
@@ -22,6 +22,7 @@ interface BlogContent {
 const BlogsUpdate = ({ isUpdateModalOpen, setIsUpdateModalOpen, dataUpdate, setDataUpdate }: IProps) => {
     const [form] = Form.useForm();
     const [contents, setContents] = useState<BlogContent[]>([]);
+    const [titleLength, setTitleLength] = useState(0);
     const [fileLists, setFileLists] = useState<Record<string, UploadFile[]>>({
         mainImage: []
     });
@@ -51,6 +52,7 @@ const BlogsUpdate = ({ isUpdateModalOpen, setIsUpdateModalOpen, dataUpdate, setD
                 introduce: dataUpdate.introduce,
                 conclusion: dataUpdate.conclusion,
             });
+            setTitleLength(dataUpdate.title?.length ?? 0);
 
             // Main image
             const mainImgList: UploadFile[] = dataUpdate.mainImage
@@ -155,8 +157,18 @@ const BlogsUpdate = ({ isUpdateModalOpen, setIsUpdateModalOpen, dataUpdate, setD
                     </Col>
                     <Col span={24}>
                         <Form.Item label="Tiêu đề" name="title" rules={[{ required: true }]}>
-                            <Input />
+                            <Input
+                                maxLength={133}
+                                showCount
+                                onChange={(e) => setTitleLength(e.target.value.length)}
+                            />
                         </Form.Item>
+                        {titleLength >= 133 && (
+                            <p style={{ color: '#faad14', fontSize: 12, marginTop: -16, marginBottom: 8 }}>
+                                <WarningOutlined style={{ marginRight: 4 }} />
+                                Bạn đã đạt tới giới hạn 133 ký tự
+                            </p>
+                        )}
                     </Col>
                     <Col span={24}>
                         <Form.Item label="Giới thiệu" name="introduce">

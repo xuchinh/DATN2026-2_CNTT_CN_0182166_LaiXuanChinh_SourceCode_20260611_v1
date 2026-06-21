@@ -41,6 +41,8 @@ export class RepReviewService {
     const { filter, sort } = aqp(query);
     if (filter.current) delete filter.current;
     if (filter.pageSize) delete filter.pageSize;
+    // Ẩn phản hồi đã soft-delete khỏi danh sách
+    filter.isDeleted = { $ne: true };
 
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
@@ -79,7 +81,8 @@ export class RepReviewService {
 
   remove(_id: string) {
     if (mongoose.isValidObjectId(_id)) {
-      return this.rebReviewModel.deleteOne({ _id })
+      // Soft-delete: ẩn phản hồi, vẫn giữ lại để kiểm duyệt / khôi phục
+      return this.rebReviewModel.updateOne({ _id }, { isDeleted: true })
     } else {
       throw new BadRequestException("_id không đúng định dạng")
     }

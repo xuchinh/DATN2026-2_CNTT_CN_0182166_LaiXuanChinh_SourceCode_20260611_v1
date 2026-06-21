@@ -50,8 +50,8 @@ export class BuildingsService {
       throw new BadRequestException("Gói chức năng không tồn tại.");
     }
 
-    // Đếm số lượng nhà hiện tại
-    const buildingCount = await this.buildingModel.countDocuments({ userId });
+    // Đếm số lượng nhà hiện tại (bỏ qua nhà đã soft-delete để giải phóng chỗ theo gói)
+    const buildingCount = await this.buildingModel.countDocuments({ userId, isDeleted: { $ne: true } });
     if (buildingCount >= Number(userPackage.totalBuilding)) {
       throw new BadRequestException(
         `Số lượng nhà của bạn đã đạt giới hạn mà gói bạn đăng ký cho phép là: ${userPackage.totalBuilding}`
@@ -80,6 +80,8 @@ export class BuildingsService {
         { address: { $regex: query.search, $options: 'i' } }
       ];
     }
+    // Ẩn nhà đã soft-delete khỏi danh sách
+    filter.isDeleted = { $ne: true };
 
     const totalItems = await this.buildingModel.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / pageSize);
@@ -112,23 +114,45 @@ export class BuildingsService {
       { _id: updateBuildingDto._id }, { ...updateBuildingDto });
   }
 
-  remove(_id: string) {
-    if (mongoose.isValidObjectId(_id)) {
-      return this.buildingModel.deleteOne({ _id })
-    } else {
+  async remove(_id: string) {
+    if (!mongoose.isValidObjectId(_id)) {
       throw new BadRequestException("_id không đúng định dạng")
     }
+    // Soft-delete nhà và cascade soft-delete phòng,hóa đơn,xe để giữ toàn bộ lịch sử doanh thu
+    const rooms = await this.roomModel.find({ buildingId: _id }).select('_id').lean();
+    const roomIds = rooms.map(r => r._id);
+    if (roomIds.length > 0) {
+      await this.waterBillModel.updateMany({ roomId: { $in: roomIds } }, { isDeleted: true });
+      await this.electricityBillModel.updateMany({ roomId: { $in: roomIds } }, { isDeleted: true });
+      await this.vehiclesModel.updateMany({ roomId: { $in: roomIds } }, { isDeleted: true });
+      await this.roomModel.updateMany({ _id: { $in: roomIds } }, { isDeleted: true });
+    }
+    return this.buildingModel.updateOne({ _id }, { isDeleted: true })
   }
 
   async updateBuildingIncome(buildingId: string) {
-    const rooms = await this.roomModel.find({
+    const startOfMonth = dayjs().startOf('month').toDate();
+    const endOfMonth = dayjs().endOf('month').toDate();
+
+    // Tính tổng thu nhập từ paymentHistory — mỗi lần xác nhận là 1 entry riêng
+    // Đảm bảo cùng phòng có nhiều khách trong tháng đều được cộng dồn
+    const rooms = await this.roomModel.find({ buildingId }).lean();
+
+    let income = 0;
+    for (const room of rooms) {
+      for (const entry of room.paymentHistory || []) {
+        const d = new Date(entry.date);
+        if (d >= startOfMonth && d <= endOfMonth) {
+          income += Number(entry.price) || 0;
+        }
+      }
+    }
+
+    const numberOfRoomsRented = await this.roomModel.countDocuments({
       buildingId,
       status: true,
-      statusPayment: '3'
-    }).lean();
-
-    const income = rooms.reduce((sum, room) => sum + (Number(room.price) || 0), 0);
-    const numberOfRoomsRented = rooms.length;
+      isDeleted: { $ne: true }
+    });
 
     await this.buildingModel.updateOne(
       { _id: buildingId },
@@ -139,12 +163,10 @@ export class BuildingsService {
 
   async getMonthlyIncomeStats(buildingId: string) {
     const fiveMonthsAgo = dayjs().subtract(5, 'month').startOf('month').toDate();
-    const rooms = await this.roomModel.find({
-      buildingId,
-      status: true,
-      statusPayment: '3',
-      paymentsDate: { $gte: fiveMonthsAgo }
-    }).lean();
+
+    // Dùng paymentHistory để tính từng lần xác nhận riêng lẻ
+    // Đảm bảo cộng dồn đúng kể cả nhiều khách trong cùng tháng
+    const rooms = await this.roomModel.find({ buildingId }).lean();
 
     const stats = Array(5).fill(0).map((_, i) => {
       const month = dayjs().subtract(i, 'month').format('MM-YYYY');
@@ -152,10 +174,15 @@ export class BuildingsService {
     });
 
     for (const room of rooms) {
-      const month = dayjs(room.paymentsDate).format('MM-YYYY');
-      const stat = stats.find(s => s.month === month);
-      if (stat) stat.income += Number(room.price) || 0;
+      for (const entry of room.paymentHistory || []) {
+        const entryDate = dayjs(entry.date);
+        if (entryDate.isBefore(fiveMonthsAgo)) continue;
+        const month = entryDate.format('MM-YYYY');
+        const stat = stats.find(s => s.month === month);
+        if (stat) stat.income += Number(entry.price) || 0;
+      }
     }
+
     return stats.reverse();
   }
 
@@ -163,8 +190,8 @@ export class BuildingsService {
   async getWaterStats(buildingId: string) {
     const fiveMonthsAgo = dayjs().subtract(5, 'month').startOf('month').toDate();
 
-    // Lấy tất cả roomId thuộc building có status = true
-    const rooms = await this.roomModel.find({ buildingId, status: true }).select('_id toDate').lean();
+    // Lấy tất cả phòng thuộc building (kể cả đã hết hạn)
+    const rooms = await this.roomModel.find({ buildingId }).select('_id toDate').lean();
     const roomIds = rooms.map(room => new Types.ObjectId(room._id));
 
     if (roomIds.length === 0) return [];
@@ -200,8 +227,8 @@ export class BuildingsService {
   async getElectricityStats(buildingId: string) {
     const fiveMonthsAgo = dayjs().subtract(5, 'month').startOf('month').toDate();
 
-    // Lấy tất cả roomId thuộc building
-    const rooms = await this.roomModel.find({ buildingId, status: true }).select('_id toDate').lean();
+    // Lấy tất cả phòng thuộc building (kể cả đã hết hạn)
+    const rooms = await this.roomModel.find({ buildingId }).select('_id toDate').lean();
     const roomIds = rooms.map(room => new Types.ObjectId(room._id));
 
     if (roomIds.length === 0) return [];
@@ -236,8 +263,9 @@ export class BuildingsService {
   async getVehiclesStats(buildingId: string) {
     const fiveMonthsAgo = dayjs().subtract(5, 'month').startOf('month');
 
+    // Lấy tất cả phòng thuộc building (kể cả đã hết hạn)
     const rooms = await this.roomModel
-      .find({ buildingId, status: true })
+      .find({ buildingId })
       .select('_id toDate')
       .lean();
 

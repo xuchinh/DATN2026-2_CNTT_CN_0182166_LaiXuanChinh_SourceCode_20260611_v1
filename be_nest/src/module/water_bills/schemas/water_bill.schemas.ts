@@ -24,6 +24,9 @@ export class WaterBill {
     toDate: Date;
     @Prop({ default: '1' })
     status: string;
+    // Soft-delete: ẩn khỏi danh sách nhưng giữ lại để không mất lịch sử doanh thu nước
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const WaterBillSchema = SchemaFactory.createForClass(WaterBill);
 

@@ -6,11 +6,13 @@ import { Vehicle, VehicleDocument } from './schemas/vehicle.schemas';
 import mongoose, { Model } from 'mongoose';
 import aqp from 'api-query-params';
 import moment from 'moment';
+import { Room } from '../rooms/schemas/room.entity';
 
 @Injectable()
 export class VehiclesService {
   constructor(
     @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>,
+    @InjectModel(Room.name) private roomModel: Model<Room>,
   ) { }
 
   async create(createVehicleDto: CreateVehicleDto) {
@@ -25,6 +27,14 @@ export class VehiclesService {
       toDate,
       status,
     } = createVehicleDto;
+
+    // [Câu 9] Không đăng ký xe cho phòng đang trống
+    const room = await this.roomModel.findById(roomId).select('status code').lean();
+    if (!room) throw new BadRequestException("Phòng không tồn tại.");
+    if (!room.status) {
+      throw new BadRequestException(`Phòng ${room.code} đang trống. Không thể đăng ký xe cho phòng chưa có khách thuê.`);
+    }
+
     const vehicle = await this.vehicleModel.create({
       type,
       price,
@@ -35,7 +45,7 @@ export class VehiclesService {
       fromDate: fromDate ?? new Date(),
       toDate,
       status
-    })
+    });
     return {
       _id: vehicle._id
     }
@@ -52,6 +62,9 @@ export class VehiclesService {
         { licensePlate: { $regex: query.search, $options: 'i' } },
       ];
     }
+    // [Câu 6] Luôn ẩn xe đã soft-delete khỏi danh sách
+    filter.isDeleted = { $ne: true };
+
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
 
@@ -64,7 +77,6 @@ export class VehiclesService {
       .find(filter)
       .limit(pageSize)
       .skip(skip)
-      // .select("-password")
       .sort(sort as any);
 
     return {
@@ -95,11 +107,11 @@ export class VehiclesService {
       { _id: updateVehicleDto._id }, updatedData);
   }
 
-  remove(_id: string) {
-    if (mongoose.isValidObjectId(_id)) {
-      return this.vehicleModel.deleteOne({ _id })
-    } else {
-      throw new BadRequestException("_id không đúng định dạng")
+  async remove(_id: string) {
+    if (!mongoose.isValidObjectId(_id)) {
+      throw new BadRequestException("_id không đúng định dạng");
     }
+    // [Câu 6] Soft-delete thay vì deleteOne — giữ lại income history cho xe đã confirm (status:'3')
+    return this.vehicleModel.updateOne({ _id }, { isDeleted: true });
   }
 }

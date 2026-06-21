@@ -20,7 +20,7 @@ import UserPaymentSelect from "../users/table/user.payment.select";
 const navList = [
   { label: "Home", slug: "/" },
   { label: "Tìm trọ", slug: '/accommodation' },
-  { label: "Bảng giá", slug: "/pricing" },
+  { label: "Gói đăng ký", slug: "/pricing" },
   { label: "Hướng dẫn sử dụng", slug: "/instructions" },
   { label: "Blog", slug: "/blogs" },
   { label: "Liên hệ", slug: "/contact-us" },
@@ -82,6 +82,14 @@ const Header = (props: any) => {
     };
   }, [menuOpen]);
   const isScrolled = useScrollBackground(50);
+
+  // Tài khoản đang đăng nhập đã bị xóa: vẫn còn phiên nhưng không lấy được dữ liệu user
+  // → tự đăng xuất, đưa về trang đăng nhập (tránh dùng phiên của tài khoản không còn tồn tại)
+  useEffect(() => {
+    if (session && !session?.data?.results?.[0]) {
+      signOut({ callbackUrl: "/auth/login" });
+    }
+  }, [session]);
 
   const items: MenuProps['items'] = [
     {
@@ -185,7 +193,7 @@ const Header = (props: any) => {
       )}
       {session && (
         <div className="flex gap-8 items-center">
-          {(dataSelect.role === 'ADMIN' || dataSelect.role === 'SUPER ADMIN') && (
+          {(dataSelect?.role === 'ADMIN' || dataSelect?.role === 'SUPER ADMIN') && (
             <ActionButtonHeader
               key={3}
               href={'/dashboard'}
@@ -201,7 +209,7 @@ const Header = (props: any) => {
                 className="cursor-pointer text-white text-[18px]"
               >
                 <Space>
-                  {session?.data?.results?.[0].name ?? ""}
+                  {session?.data?.results?.[0]?.name ?? ""}
                   <DownOutlined />
                 </Space>
               </a>
@@ -212,7 +220,7 @@ const Header = (props: any) => {
 
       )}
       <ModalChangePassword
-        email={session?.data?.results?.[0].email}
+        email={session?.data?.results?.[0]?.email}
         title="Đổi mật khẩu"
         isModalOpen={changePassword}
         setIsModalOpen={setChangePassword}

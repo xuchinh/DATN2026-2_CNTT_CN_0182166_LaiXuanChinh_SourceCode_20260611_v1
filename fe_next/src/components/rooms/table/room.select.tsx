@@ -36,7 +36,7 @@ const RoomSelect = (props: IProps) => {
         setDataSelect(null);
     }
     const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString()} VNĐ`;
+        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
     return (
         <Modal
             title="Thông tin chi tiết phòng"

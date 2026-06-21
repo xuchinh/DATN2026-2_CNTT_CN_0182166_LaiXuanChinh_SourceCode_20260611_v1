@@ -210,7 +210,7 @@ const UserUpdatePackage = (props: IProps) => {
                                             {offer.code} -
                                             {Number(offer.discountPercentage) > 0
                                                 ? `${offer.discountPercentage}%`
-                                                : `${Number(offer.discountCurrency).toLocaleString()} VNĐ`}
+                                                : `${Number(offer.discountCurrency).toLocaleString('vi-VN')} VNĐ`}
                                         </Select.Option>
                                     ))}
                                 </Select>
@@ -220,7 +220,7 @@ const UserUpdatePackage = (props: IProps) => {
 
                     <Col span={24} md={12}>
                         <Form.Item label="Số tiền cần trả (VNĐ)" name="paymentUpdate">
-                            <Input disabled value={calculatedPayment?.toLocaleString()} />
+                            <Input disabled value={calculatedPayment?.toLocaleString('vi-VN')} />
                         </Form.Item>
                     </Col>
 
@@ -241,7 +241,7 @@ const UserUpdatePackage = (props: IProps) => {
                     <>
                         <strong >{supperAdmin.bankAccount}</strong> <strong>{supperAdmin.bank}</strong><br />
                         <span>
-                            theo nội dung: "Thanh toán gia hạn gói <strong>{dataUpdate?.name}</strong>  số tiền là: <strong>{calculatedPayment?.toLocaleString()}</strong> " để quản trị viên có thể các nhận
+                            theo nội dung: "Thanh toán gia hạn gói <strong>{dataUpdate?.name}</strong>  số tiền là: <strong>{calculatedPayment?.toLocaleString('vi-VN')}</strong> " để quản trị viên có thể các nhận
                         </span>
                     </>
                 ) : (

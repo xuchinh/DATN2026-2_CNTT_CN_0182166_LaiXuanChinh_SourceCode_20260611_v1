@@ -40,11 +40,13 @@ export class Room {
     paymentsDate: Date
     @Prop({ default: '1' })
     statusPayment: string;
+    // Lịch sử các lần xác nhận thanh toán — mỗi lần confirm push thêm 1 entry
+    // userId: khách ứng với lần thu này → cho phép nhiều khách trong cùng phòng/tháng đều được cộng dồn
+    @Prop({ type: [{ date: Date, price: String, userId: { type: mongoose.Schema.Types.ObjectId, ref: User.name } }], default: [] })
+    paymentHistory: { date: Date; price: string; userId?: mongoose.Schema.Types.ObjectId }[];
+    // Soft-delete: ẩn phòng khỏi danh sách nhưng giữ paymentHistory để không mất doanh thu phòng
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const RoomSchema = SchemaFactory.createForClass(Room);
-RoomSchema.pre<RoomDocument>('save', function (next) {
-    if (!this.paymentsDate && this.fromDate) {
-        this.paymentsDate = this.fromDate;
-    }
-    next();
-});
+// paymentsDate chỉ được set khi xác nhận thanh toán, không tự set từ fromDate

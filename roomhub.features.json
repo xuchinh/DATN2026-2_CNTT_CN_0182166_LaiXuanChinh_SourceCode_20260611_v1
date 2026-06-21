@@ -1,0 +1,171 @@
+[{
+  "_id": {
+    "$oid": "6a19a8d10a2064dc5ded0976"
+  },
+  "code": "F8",
+  "name": "Manage Features",
+  "systemRoles": "SUPER ADMIN",
+  "path": "feature",
+  "description": "Quản lý chức năng",
+  "displayName": "Quản lý chức năng",
+  "menuCode": "3",
+  "createdAt": {
+    "$date": "2025-08-16T09:23:51.961Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:13:35.864Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19a956e810464565f18f38"
+  },
+  "code": "F1",
+  "name": "Manage user",
+  "systemRoles": "SUPER ADMIN",
+  "path": "user",
+  "description": "Quản lý người dùng",
+  "displayName": "Quản lý người dùng",
+  "menuCode": "1",
+  "createdAt": {
+    "$date": "2026-05-29T14:57:26.978Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T14:57:26.978Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19a9ffe810464565f18f8a"
+  },
+  "code": "F2",
+  "name": "Manage Buildings",
+  "systemRoles": "ADMIN",
+  "path": "building",
+  "description": "Quản lý nhà trọ",
+  "displayName": "Quản lý nhà trọ",
+  "menuCode": "2",
+  "createdAt": {
+    "$date": "2026-05-29T15:00:15.077Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:05:27.276Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19aae7e810464565f1908d"
+  },
+  "code": "F3",
+  "name": "Manage Rooms",
+  "systemRoles": "ADMIN",
+  "path": "room",
+  "description": "Quản lý phòng trọ",
+  "displayName": "Quản lý phòng trọ",
+  "menuCode": "4",
+  "createdAt": {
+    "$date": "2026-05-29T15:04:07.162Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:04:07.162Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19ab73e810464565f1915f"
+  },
+  "code": "F4",
+  "name": "Manage Water",
+  "systemRoles": "ADMIN",
+  "path": "water-bill",
+  "description": "Quản lý tiền nước",
+  "displayName": "Quản lý tiền nước",
+  "menuCode": "5",
+  "createdAt": {
+    "$date": "2026-05-29T15:06:27.419Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:06:27.419Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19abd7e810464565f19172"
+  },
+  "code": "F5",
+  "name": "Manage Electricity ",
+  "systemRoles": "ADMIN",
+  "path": "electricity-bill",
+  "description": "Quản lý tiền điện",
+  "displayName": "Quản lý tiền điện",
+  "menuCode": "6",
+  "createdAt": {
+    "$date": "2026-05-29T15:08:07.689Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:08:07.689Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19ac21e810464565f19179"
+  },
+  "code": "F6",
+  "name": "Manage Vehicles",
+  "systemRoles": "ADMIN",
+  "path": "vehicles",
+  "description": "Quản lý phương tiện",
+  "displayName": "Quản lý phương tiện",
+  "menuCode": "7",
+  "createdAt": {
+    "$date": "2026-05-29T15:09:21.732Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:09:21.732Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19ac5ce810464565f19180"
+  },
+  "code": "F7",
+  "name": "Manage Packages",
+  "systemRoles": "SUPER ADMIN",
+  "path": "package",
+  "description": "Quản lý gói chức năng",
+  "displayName": "Quản lý gói chức năng",
+  "menuCode": "8",
+  "createdAt": {
+    "$date": "2026-05-29T15:10:20.445Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:12:00.534Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a19acb3e810464565f19187"
+  },
+  "code": "F9",
+  "name": "Manage Offers",
+  "systemRoles": "SUPER ADMIN",
+  "path": "offer",
+  "description": "Quản lý gói giảm giá",
+  "displayName": "Quản lý gói giảm giá",
+  "menuCode": "9",
+  "createdAt": {
+    "$date": "2026-05-29T15:11:47.032Z"
+  },
+  "updatedAt": {
+    "$date": "2026-05-29T15:11:47.032Z"
+  },
+  "__v": 0
+}]

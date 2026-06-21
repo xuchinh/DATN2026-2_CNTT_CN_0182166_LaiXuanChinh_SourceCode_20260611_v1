@@ -1,6 +1,7 @@
 import "@/app/(root)/blogs/[id]/styles/custom-markdown.css";
 
-import Image from "next/image";
+import ImageWithFallback from "@/components/shared/ImageWithFallback";
+import ImgFallback from "@/components/shared/ImgFallback";
 
 import type { Blog, BlogContent } from "../../../../types/blog";
 import UiFadeAnimateDiv from "../../../ui/UiAnimate/UiFadeAnimateDiv";
@@ -27,7 +28,7 @@ const DetailSection = async ({ blog }: { blog: Blog }) => {
         <div className="mx-auto max-w-[1086.86px] py-12 w-[100%]">
           <div className="mb-5">
             <div className="relative mb-[50px] pb-[56.25%]">
-              <Image
+              <ImageWithFallback
                 src={encodeURI(blog.mainImage || "")}
                 alt="thumbnail"
                 fill
@@ -69,7 +70,7 @@ const DetailSection = async ({ blog }: { blog: Blog }) => {
                     <p className="text-[18px] text-[#313A5A] font-normal leading-[28.8px]">{section.Content1}</p>
                   )}
                   {section.image && (
-                    <img
+                    <ImgFallback
                       src={section.image}
                       alt={`Ảnh ${idx + 1}`}
                       className="w-[60%] max-h-[300px] object-cover rounded-lg shadow-md mx-auto"

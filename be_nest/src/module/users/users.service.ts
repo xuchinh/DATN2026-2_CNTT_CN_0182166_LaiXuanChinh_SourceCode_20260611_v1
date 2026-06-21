@@ -12,12 +12,27 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
 import moment from 'moment';
+import { Room } from '../rooms/schemas/room.entity';
+import { Building } from '../buildings/schemas/building.schemas';
+import { WaterBill } from '../water_bills/schemas/water_bill.schemas';
+import { ElectricityBill } from '../electricity_bills/schemas/electricity_bill.schemas';
+import { Vehicle } from '../vehicles/schemas/vehicle.schemas';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
+    @InjectModel(Room.name)
+    private roomModel: Model<Room>,
+    @InjectModel(Building.name)
+    private buildingModel: Model<Building>,
+    @InjectModel(WaterBill.name)
+    private waterBillModel: Model<WaterBill>,
+    @InjectModel(ElectricityBill.name)
+    private electricityBillModel: Model<ElectricityBill>,
+    @InjectModel(Vehicle.name)
+    private vehicleModel: Model<Vehicle>,
     private readonly mailerService: MailerService,
   ) { }
   //fun check mail exists
@@ -66,6 +81,8 @@ export class UsersService {
         { email: { $regex: query.search, $options: 'i' } },
       ];
     }
+    // Ẩn tài khoản đã soft-delete khỏi danh sách
+    filter.isDeleted = { $ne: true };
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
 
@@ -86,7 +103,7 @@ export class UsersService {
         current: current, //trang hiện tại
         pageSize: pageSize, //số lượng bản ghi đã lấy
         pages: totalPages,  //tổng số trang với điều kiện query
-        total: totalItems // tổng số phần tử (số bản ghi)
+        total: totalItems // tổng số bản ghi
       },
       results //kết quả query
     }
@@ -98,7 +115,8 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return await this.userModel.findOne({ email })
+    // Loại trừ tài khoản đã soft-delete → không cho đăng nhập
+    return await this.userModel.findOne({ email, isDeleted: { $ne: true } })
   }
 
   async update(updateUserDto: UpdateUserDto) {
@@ -113,12 +131,37 @@ export class UsersService {
   }
 
   async remove(_id: string) {
-    //check id
-    if (mongoose.isValidObjectId(_id)) {
-      return this.userModel.deleteOne({ _id })
-    } else {
-      throw new BadRequestException("_id không đúng định dạng")
+    if (!mongoose.isValidObjectId(_id)) {
+      throw new BadRequestException("_id không đúng định dạng");
     }
+
+    // [Câu 1] Nếu user là landlord → cascade soft-delete toàn bộ buildings và nội dung của họ
+    // (giữ lại toàn bộ dữ liệu để không mất lịch sử doanh thu)
+    const buildings = await this.buildingModel.find({ userId: _id }).select('_id').lean();
+    if (buildings.length > 0) {
+      const buildingIds = buildings.map(b => b._id);
+      const rooms = await this.roomModel.find({ buildingId: { $in: buildingIds } }).select('_id').lean();
+      if (rooms.length > 0) {
+        const roomIds = rooms.map(r => r._id);
+        await this.waterBillModel.updateMany({ roomId: { $in: roomIds } }, { isDeleted: true });
+        await this.electricityBillModel.updateMany({ roomId: { $in: roomIds } }, { isDeleted: true });
+        await this.vehicleModel.updateMany({ roomId: { $in: roomIds } }, { isDeleted: true });
+        await this.roomModel.updateMany({ _id: { $in: roomIds } }, { isDeleted: true });
+      }
+      await this.buildingModel.updateMany({ _id: { $in: buildingIds } }, { isDeleted: true });
+    }
+
+    // [Câu 1] Nếu user là tenant → trả phòng về trống, giữ paymentHistory để không mất lịch sử thu nhập
+    await this.roomModel.updateMany(
+      { userId: _id, status: true },
+      {
+        $set: { status: false, statusPayment: '1', totalMonth: '0' },
+        $unset: { userId: 1, fromDate: 1, toDate: 1 },
+      }
+    );
+
+    // Soft-delete tài khoản: ẩn khỏi danh sách + chặn đăng nhập (qua findByEmail), giữ lại bản ghi
+    return this.userModel.updateOne({ _id }, { isDeleted: true });
   }
 
   async handleRegister(registerDto: CreateAuthDto) {

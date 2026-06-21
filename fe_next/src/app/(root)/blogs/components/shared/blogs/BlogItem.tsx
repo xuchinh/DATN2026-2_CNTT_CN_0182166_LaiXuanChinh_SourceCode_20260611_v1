@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import ImageWithFallback from "@/components/shared/ImageWithFallback";
 
 import type { Blog } from "../../../types/blog";
 import SVGArrowRight from "../../svgs/SVGArrowRight";
@@ -18,7 +18,7 @@ const BlogItem = ({ blogs }: BlogItemProp) => {
         className="relative items-center gap-x-4 bg-white"
       >
         <div className="relative h-1/2 aspect-[360/312] lg:w-[360px] w-[296px] rounded-[6px]">
-          <Image
+          <ImageWithFallback
             src={`${blogs.mainImage}`}
             fill
             alt="template thumbnail"
@@ -33,7 +33,7 @@ const BlogItem = ({ blogs }: BlogItemProp) => {
             {"5 Phút đọc"}
           </p>
           <p className="line-clamp-2 text-[18px] lg:text-[20px] text-description font-semibold leading-7 mb-4">
-            {blogs.title}
+            {blogs.title?.length > 133 ? blogs.title.slice(0, 133) + '...' : blogs.title}
           </p>
           <p className="text-[14px] text-description font-normal leading-5 mb-6 line-clamp-3">
             {blogs.introduce}

@@ -92,7 +92,7 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
     const selectedElectricBills = electricityBilloptions.filter(eb => eb.roomId === selectedRoom?._id);
 
     const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString()} VNĐ`;
+        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
 
     const dateFormat = (date: string) => dayjs(date).format('DD/MM/YYYY');
 

@@ -170,10 +170,11 @@ const AccommodationSearch = (props: any) => {
         try {
             const userId = session?.data?.results?.[0]._id;
             const res = await handleAllRoom(undefined, userId);
+            // Tính cả phòng đang chờ xác nhận (status false) — miễn là phòng đang gắn với user này.
+            // Chỉ cho thuê tiếp khi hợp đồng đã hết hạn (toDate đã qua).
             const activeRentedRooms = (res?.data?.results || []).filter((r: TypeRoomProp) => {
-                if (r.status !== true) return false;
-                if (!r.toDate) return true;
-                return new Date(r.toDate) > new Date();
+                if (!r.toDate) return true; // vừa thuê, chưa có hạn → vẫn đang giữ
+                return new Date(r.toDate) > new Date(); // hợp đồng còn hạn
             });
             if (activeRentedRooms.length > 0) {
                 const room = activeRentedRooms[0];
@@ -183,7 +184,7 @@ const AccommodationSearch = (props: any) => {
                 setModalConfig({
                     type: "error",
                     title: "Bạn đã có phòng đang thuê",
-                    message: `Bạn đang thuê phòng ${room.code} đến ngày ${toDateStr}. Vui lòng hết hạn hợp đồng trước khi thuê phòng mới.`,
+                    message: `Bạn đang thuê phòng ${room.code} đến ngày ${toDateStr}. Vui lòng chấm dứt hợp đồng trước khi thuê phòng mới.`,
                     onConfirm: undefined
                 });
                 setModalOpen(true);
@@ -201,24 +202,26 @@ const AccommodationSearch = (props: any) => {
                             userId: session?.data?.results?.[0]._id,
                             statusPayment: '2',
                             fromDate: newDate,
-                            paymentsDate: newDate,
                         };
                         const updateUser = {
                             _id: session?.data?.results?.[0]._id,
                             role: "USERS"
                         }
+                        // Khách mới thuê: reset đồng hồ về 0 nhưng để trạng thái 'Chưa thanh toán' ('1')
+                        // — chủ nhà nhập số điện/nước + giá sau, rồi flow xác nhận 1→2→3 chạy bình thường
+                        // Dùng optional chaining: phòng nhà mới có thể CHƯA có hóa đơn điện/nước (undefined)
                         const updateWaterBill = {
-                            _id: waterBills._id,
+                            _id: waterBills?._id,
                             toDate: newDate,
                             amount: '0',
-                            status: '3',
+                            status: '1',
                             payment: '0'
                         }
                         const electricityBill = {
-                            _id: electricityBills._id,
+                            _id: electricityBills?._id,
                             toDate: newDate,
                             amount: '0',
-                            status: '3',
+                            status: '1',
                             payment: '0'
                         }
                         const res = await handleUpdateRoom(updateData);

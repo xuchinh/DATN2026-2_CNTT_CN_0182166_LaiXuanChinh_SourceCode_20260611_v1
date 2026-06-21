@@ -71,6 +71,9 @@ export class User {
     bank: string
     @Prop()
     bankAccount: string
+    // Soft-delete: ẩn khỏi danh sách + chặn đăng nhập, vẫn giữ bản ghi để khôi phục / tránh mồ côi dữ liệu
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

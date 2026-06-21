@@ -8,6 +8,7 @@ import {
 } from 'antd';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import ImgFallback from '@/components/shared/ImgFallback';
 import { handlePackageUser } from '../requests/user.requests';
 
 interface IProps {
@@ -71,7 +72,7 @@ const UserSelect = (props: IProps) => {
                         <div>
                             <strong>Avatar:</strong><br />
                             {UserData.avatar ? (
-                                <img
+                                <ImgFallback
                                     src={UserData.avatar}
                                     alt="Avatar"
                                     className="w-24 h-24 object-cover rounded-md mt-2 border border-gray-200"

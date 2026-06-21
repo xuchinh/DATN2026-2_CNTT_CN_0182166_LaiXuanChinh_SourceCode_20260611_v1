@@ -162,7 +162,7 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
                         status: true,
                         toDate: values.toDate?.format("YYYY-MM-DD"),
                         statusPayment: false,
-                        role: "ADMIN",
+                        // KHÔNG cấp role ADMIN ở đây — chờ super admin xác nhận thanh toán mới cấp quyền
                     }
 
                     const res = await handleUpdateUserAction(updateData);
@@ -211,7 +211,7 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
             {packageData ? (
                 <>
                     <p><strong>Tên gói:</strong> {packageData.name}</p>
-                    <p><strong>Giá:</strong> {packageData.price?.toLocaleString()} VNĐ / tháng</p>
+                    <p><strong>Giá:</strong> {Number(packageData.price || 0).toLocaleString('vi-VN')} VNĐ / tháng</p>
 
                     <Form
                         layout="vertical"
@@ -251,7 +251,7 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
                                                     {offer.code} -
                                                     {Number(offer.discountPercentage) > 0
                                                         ? `${offer.discountPercentage}%`
-                                                        : `${Number(offer.discountCurrency).toLocaleString()} VNĐ`}
+                                                        : `${Number(offer.discountCurrency).toLocaleString('vi-VN')} VNĐ`}
                                                 </Select.Option>
                                             ))}
                                         </Select>
@@ -262,7 +262,7 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
                             {/* Tiền cần trả */}
                             <Col span={24}>
                                 <Form.Item label="Số tiền cần trả (VNĐ)" name="payment">
-                                    <Input disabled value={calculatedPayment?.toLocaleString()} />
+                                    <Input disabled value={calculatedPayment?.toLocaleString('vi-VN')} />
                                 </Form.Item>
                             </Col>
 
@@ -281,7 +281,7 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
                             <>
                                 <strong >{supperAdmin.bankAccount}</strong> <strong>{supperAdmin.bank}</strong><br />
                                 <span>
-                                    theo nội dung: "Thanh toán gói <strong>{packageData.name}</strong> số tháng: <strong>{monthPay}</strong> số tiền là: <strong>{calculatedPayment?.toLocaleString()}</strong> " để quản trị viên có thể các nhận
+                                    theo nội dung: "Thanh toán gói <strong>{packageData.name}</strong> số tháng: <strong>{monthPay}</strong> số tiền là: <strong>{calculatedPayment?.toLocaleString('vi-VN')}</strong> " để quản trị viên có thể các nhận
                                 </span>
                             </>
                         ) : (

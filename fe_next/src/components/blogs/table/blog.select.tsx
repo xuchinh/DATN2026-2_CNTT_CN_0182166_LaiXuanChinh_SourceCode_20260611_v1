@@ -1,6 +1,7 @@
 import { Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { handleBuilding, handleUser } from '../requests/blog.requests';
+import ImgFallback from '@/components/shared/ImgFallback';
 
 interface IProps {
     isSelectModalOpen: boolean;
@@ -70,7 +71,7 @@ const BlogsSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect }: IP
                     )}
                     {/* Ảnh chính */}
                     {blogData.mainImage && (
-                        <img
+                        <ImgFallback
                             src={blogData.mainImage}
                             alt="Ảnh tiêu đề"
                             className="w-[80%] max-h-[300px] object-cover rounded-lg shadow-md mx-auto"
@@ -111,7 +112,7 @@ const BlogsSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect }: IP
                                 <p className="text-base">{section.Content1}</p>
                             )}
                             {section.image && (
-                                <img
+                                <ImgFallback
                                     src={section.image}
                                     alt={`Ảnh ${idx + 1}`}
                                     className="w-[60%] max-h-[300px] object-cover rounded-lg shadow-md mx-auto"

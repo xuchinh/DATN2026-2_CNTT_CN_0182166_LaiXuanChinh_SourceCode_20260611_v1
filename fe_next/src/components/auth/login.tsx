@@ -108,7 +108,7 @@ const Login = () => {
                 title="Quên mật khẩu"
                 isModalOpen={changePassword}
                 setIsModalOpen={setChangePassword}
-                repline="Tải khoản của bạn đã được thay đổi mật khẩu thành công. Vui lòng đăng nhập lại"
+                repline="Tài khoản của bạn đã được thay đổi mật khẩu thành công. Vui lòng đăng nhập lại"
             />
         </>
     )

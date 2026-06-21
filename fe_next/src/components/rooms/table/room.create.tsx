@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { handleCreateRoom, handleBuilding, handleCreateWaterBill, handleCreateElectricityBill } from '../requests/room.requests';
+import { handleCreateRoom, handleBuilding } from '../requests/room.requests';
 
 
 interface IProps {
@@ -42,11 +42,7 @@ const RoomCreate = (props: IProps) => {
     const onFinish = async (values: any) => {
         const res = await handleCreateRoom(values);
         if (res?.data) {
-            const roomId = res.data._id;
-
-            await handleCreateWaterBill(roomId);
-            await handleCreateElectricityBill(roomId);
-
+            // Hóa đơn điện/nước KHÔNG sinh ở đây nữa — sẽ tự sinh khi chủ trọ xác nhận khách thuê
             handleCloseCreateModal();
             message.success("Create succeed!");
         } else {

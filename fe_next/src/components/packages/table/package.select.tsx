@@ -71,7 +71,7 @@
 //                         <div><strong>Ghi chú:</strong> {packageData.description || 'Không có'}</div>
 //                     </Col>
 //                     <Col span={24} md={12}>
-//                         <div><strong>Giá:</strong> {packageData.price?.toLocaleString()} VNĐ</div>
+//                         <div><strong>Giá:</strong> {packageData.price?.toLocaleString('vi-VN')} VNĐ</div>
 //                     </Col>
 //                     <Col span={24} md={12}>
 //                         <div><strong>Số nhà tối đang:</strong> {packageData.totalBuilding}</div>
@@ -214,7 +214,7 @@ const PackageSelect = (props: IProps) => {
                             <div><strong>Ghi chú:</strong> {packageData.description || 'Không có'}</div>
                         </Col>
                         <Col span={24} md={12}>
-                            <div><strong>Giá:</strong> {packageData.price?.toLocaleString()} VNĐ</div>
+                            <div><strong>Giá:</strong> {packageData.price?.toLocaleString('vi-VN')} VNĐ</div>
                         </Col>
                         <Col span={24} md={12}>
                             <div><strong>Số nhà tối đang:</strong> {packageData.totalBuilding}</div>

@@ -1,7 +1,8 @@
 import {
-    Modal, Input, Form, Row, Col, message, notification, Select, Upload, UploadFile, Button, Space
+    Modal, Input, Form, Row, Col, message, notification, Select, Upload, UploadFile, Button
 } from 'antd';
 import { useEffect, useState } from 'react';
+import { WarningOutlined } from '@ant-design/icons';
 import { handleBuilding, handleCreateBlogs } from '../requests/blog.requests';
 import { UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -21,6 +22,7 @@ const BlogCreate = (props: IProps) => {
     const { isCreateModalOpen, setIsCreateModalOpen } = props;
     const [form] = Form.useForm();
     const [buildingOptions, setBuildingOptions] = useState<any[]>([]);
+    const [titleLength, setTitleLength] = useState(0);
 
     // mảng nội dung động
     const [contents, setContents] = useState<BlogContent[]>([{ index: '', Content1: '', image: '', Content2: '' }]);
@@ -155,8 +157,18 @@ const BlogCreate = (props: IProps) => {
                     </Col>
                     <Col span={24}>
                         <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: 'Nhập tiêu đề' }]}>
-                            <Input />
+                            <Input
+                                maxLength={133}
+                                showCount
+                                onChange={(e) => setTitleLength(e.target.value.length)}
+                            />
                         </Form.Item>
+                        {titleLength >= 133 && (
+                            <p style={{ color: '#faad14', fontSize: 12, marginTop: -16, marginBottom: 8 }}>
+                                <WarningOutlined style={{ marginRight: 4 }} />
+                                Bạn đã đạt tới giới hạn 133 ký tự
+                            </p>
+                        )}
                     </Col>
                     <Col span={24}>
                         <Form.Item label="Giới thiệu" name="introduce">

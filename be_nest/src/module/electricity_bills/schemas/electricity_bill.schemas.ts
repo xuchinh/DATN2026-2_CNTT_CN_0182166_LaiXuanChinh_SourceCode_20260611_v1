@@ -20,24 +20,8 @@ export class ElectricityBill {
     toDate: Date;
     @Prop({ default: '1' })
     status: string;
+    // Soft-delete: ẩn khỏi danh sách nhưng giữ lại để không mất lịch sử doanh thu điện
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const ElectricityBillSchema = SchemaFactory.createForClass(ElectricityBill);
-
-// ElectricityBillSchema.pre<ElectricityBillDocument>('save', function (next) {
-//     const vnNow = moment().tz('Asia/Ho_Chi_Minh'); // giờ Việt Nam
-
-//     if (!this.toDate) {
-//         this.toDate = vnNow.toDate();
-//     }
-
-//     if (!this.fromDate) {
-//         const oneMonthAgo = vnNow.clone().subtract(1, 'month');
-//         this.fromDate = oneMonthAgo.toDate();
-//     }
-//     const amount = parseFloat(this.amount || '0');
-//     const price = parseFloat(this.eletricPrice || '0');
-
-//     const total = amount * price;
-//     this.payment = total.toString();
-//     next();
-// });

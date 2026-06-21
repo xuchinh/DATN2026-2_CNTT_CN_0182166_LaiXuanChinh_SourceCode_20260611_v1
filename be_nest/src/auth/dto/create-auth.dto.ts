@@ -2,17 +2,17 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 
 export class CreateAuthDto {
     @IsEmail()
-    @IsNotEmpty({ message: "email khong duoc de trong" })
+    @IsNotEmpty({ message: "email không được để trống" })
     email: string;
-    @IsNotEmpty({ message: "password khong duoc de trong" })
+    @IsNotEmpty({ message: "password không được để trống" })
     password: string;
-    @IsNotEmpty({ message: "name khong duoc de trong" })
+    @IsNotEmpty({ message: "name không được để trống" })
     name: string;
 
-    @IsNotEmpty({ message: "phone khong duoc de trong" })
+    @IsNotEmpty({ message: "phone không được để trống" })
     phone: string;
 
-    @IsNotEmpty({ message: "address khong duoc de trong" })
+    @IsNotEmpty({ message: "address không được để trống" })
     address?: string;
 }
 

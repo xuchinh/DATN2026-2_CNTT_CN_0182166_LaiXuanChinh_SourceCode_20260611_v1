@@ -26,6 +26,9 @@ export class Vehicle {
     toDate: Date;
     @Prop({ default: '1' })
     status: string;
+    // [Câu 6] Soft-delete: không xóa cứng để giữ lại lịch sử income xe đã confirm
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const VehicleSchema = SchemaFactory.createForClass(Vehicle);
 

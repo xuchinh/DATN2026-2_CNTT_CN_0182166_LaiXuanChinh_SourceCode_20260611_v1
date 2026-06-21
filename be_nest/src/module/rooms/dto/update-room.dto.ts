@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateRoomDto } from './create-room.dto';
-import { IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsBoolean, IsMongoId, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
 
 export class UpdateRoomDto {
     @IsMongoId({ message: "_id không hợp lệ" })
@@ -23,8 +23,9 @@ export class UpdateRoomDto {
     @IsOptional()
     status: boolean;
     @IsOptional()
+    @ValidateIf(o => o.userId !== null)
     @IsMongoId({ message: '_id không hợp lệ' })
-    userId: string;
+    userId: string | null;
     @IsOptional()
     @IsMongoId({ message: '_id không hợp lệ' })
     buildingId: string;
@@ -40,4 +41,8 @@ export class UpdateRoomDto {
     statusPayment: string;
     @IsOptional()
     payment: string;
+    // [Câu 8] Landlord thủ công xác nhận hết hạn → bỏ qua guard race condition
+    @IsOptional()
+    @IsBoolean()
+    forceExpire: boolean;
 }

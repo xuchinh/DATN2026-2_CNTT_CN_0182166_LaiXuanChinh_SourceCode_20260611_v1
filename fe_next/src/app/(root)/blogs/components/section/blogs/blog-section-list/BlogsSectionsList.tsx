@@ -19,7 +19,7 @@ const BlogSectionList = ({ props }: BlogSectionListProp) => {
   const [meta, setMeta] = useState(defaultMeta);
 
   const fetchBlogs = async (current: number, reset = false) => {
-    const paginationRequest: TypePaginationRequest = { current, pageSize: 3 };
+    const paginationRequest: TypePaginationRequest = { current, pageSize: 9 };
     const resBlogs = await handleBlogs(
       paginationRequest,
     )

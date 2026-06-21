@@ -21,6 +21,10 @@ export class Package {
     features: mongoose.Schema.Types.ObjectId[];
     @Prop()
     totalBuilding: string;
+    // Soft-delete: ẩn gói khỏi trang bảng giá (không mua mới được) NHƯNG người đã mua
+    // vẫn dùng tiếp vì resolve quyền dùng qua findById(user.packageId) không lọc isDeleted
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 export const PackageSchema = SchemaFactory.createForClass(Package)
 
