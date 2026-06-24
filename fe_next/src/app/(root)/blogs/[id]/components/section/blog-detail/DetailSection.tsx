@@ -27,14 +27,16 @@ const DetailSection = async ({ blog }: { blog: Blog }) => {
       <UiFadeAnimateDiv className="mx-auto max-w-[1240px] px-5 bg-white rounded-[20px] relative z-[2]">
         <div className="mx-auto max-w-[1086.86px] py-12 w-[100%]">
           <div className="mb-5">
-            <div className="relative mb-[50px] pb-[56.25%]">
-              <ImageWithFallback
-                src={encodeURI(blog.mainImage || "")}
-                alt="thumbnail"
-                fill
-                className="rounded-lg object-cover"
-              />
-            </div>
+            {blog.mainImage && (
+              <div className="relative mb-[50px] pb-[56.25%]">
+                <ImageWithFallback
+                  src={encodeURI(blog.mainImage)}
+                  alt="thumbnail"
+                  fill
+                  className="rounded-lg object-cover"
+                />
+              </div>
+            )}
             <div className="flex flex-col items-start gap-4 leading-relaxed">
               <p className="text-[18px] text-[#313A5A] font-normal leading-[28.8px]">
                 {blog.introduce}
@@ -74,6 +76,7 @@ const DetailSection = async ({ blog }: { blog: Blog }) => {
                       src={section.image}
                       alt={`Ảnh ${idx + 1}`}
                       className="w-[60%] max-h-[300px] object-cover rounded-lg shadow-md mx-auto"
+                      hideOnError
                     />
                   )}
                   {section.Content2 && (

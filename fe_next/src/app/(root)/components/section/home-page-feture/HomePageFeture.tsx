@@ -1,50 +1,31 @@
-import Image from "next/image";
-
 import FeatureList from "@/app/(root)/components/section/home-page-feture/FeatureList";
-import StarSVG from "@/app/(root)/components/svgs/StarSVG";
 
 const HomePageFeture = () => {
   return (
-    <div className="h-[1190px]">
-      {/* content */}
-      <div className="ml-[3%]  flex gap-24 h-full ">
-        {/* picture left side */}
-        <div className="w-1/2 pt-[121px] ">
-          <div className="max-w-[858px]">
-            {/* heading */}
-            <div className="flex items-center">
-              <StarSVG className="mr-5 " />
-              <h1 className="text-[#4C1D95] font-playfair text-[64px] font-medium ">
-                Tính Năng
-                <span className="text-[#F97316] italic font-playfair">
-                  {" "}
-                  Nổi Bật
-                </span>
-              </h1>
-            </div>
-            <div className="relative z-10">
-              <Image
-                src="/images/home-page/feture-chart.png"
-                width={858}
-                height={563}
-                alt="future chart picture"
-                className="object-cover bg-no-repeat"
-              />
-            </div>
-            <div className="relative translate-x-[6%] translate-y-[-16%] z-0 ">
-              <Image
-                src="/images/home-page/dot-left-feture.png"
-                width={347}
-                height={282}
-                alt="dot left"
-                className="object-cover bg-no-repeat"
-              />
-            </div>
-          </div>
+    <section className="relative overflow-hidden bg-white py-20 lg:py-28">
+      {/* Hình khối nghệ thuật nền */}
+      <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-[#ECFDF5] blur-2xl" />
+      <div className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[#ECFDF5] blur-2xl" />
+
+      <div className="relative z-10 mx-auto w-11/12 max-w-[1200px]">
+        <div className="mx-auto max-w-[640px] text-center">
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-[#059669]">
+            Tính năng nổi bật
+          </span>
+          <h2 className="mt-4 font-playfair text-[34px] font-bold leading-tight text-[#064E3B] md:text-[46px]">
+            Đủ công cụ để bạn
+            <span className="italic text-[#059669]"> vận hành trọn vẹn</span>
+          </h2>
+          <p className="mt-4 text-lg text-[#3F5C50]">
+            Mọi thứ một chủ trọ cần, gói gọn trong một nền tảng dễ dùng.
+          </p>
         </div>
-        <FeatureList className="w-1/2 bg-gradient-to-b from-[#4C1D95] to-[#3B0764] relative" />
+
+        <div className="mt-14">
+          <FeatureList />
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

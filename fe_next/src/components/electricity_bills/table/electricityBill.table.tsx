@@ -51,8 +51,10 @@ const ElectricityBillTable = (props: IProps) => {
         fetchbuildingOptions();
     }, []);
 
-    const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
+    const formatCurrency = (value: string | number) => {
+        const num = Number(value);
+        return `${(Number.isFinite(num) ? num : 0).toLocaleString('vi-VN')} VNĐ`;
+    };
     const columns = [
         {
             title: "STT",
@@ -282,6 +284,7 @@ const ElectricityBillTable = (props: IProps) => {
                     dataSource={electricityBills}
                     columns={columns}
                     rowKey="_id"
+                    scroll={{ x: 'max-content' }}
                     pagination={{
                         current: meta.current,
                         pageSize: meta.pageSize,

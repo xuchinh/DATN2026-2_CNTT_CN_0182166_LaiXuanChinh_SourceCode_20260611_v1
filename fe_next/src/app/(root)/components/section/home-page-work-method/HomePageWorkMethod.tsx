@@ -1,30 +1,30 @@
 import StepList from "@/app/(root)/components/section/home-page-work-method/StepList";
-import SpiralSVG from "@/app/(root)/components/svgs/SpiralSVG";
 
 const HomePageWorkMethod = () => {
   return (
-    <div className="h-[1050px] bg-gradient-to-b from-[#2D1B69] via-[#4C1D95] to-[#3B0764]">
-      {/* text and cicle */}
-      <div className="flex justify-center pt-[80px] ">
-        <div className="w-[667px]  h-[300px]  overflow-hidden">
-          <div className="w-[667px]  h-[667px] border-[3px] border-[#F97316] rounded-full">
-            <div className=" w-[85%] mx-auto h-[250px] overflow-hidden mt-[50px] ">
-              <div className="w-full h-[567px] bg-[#F3E8FF] rounded-full text-center pt-[73px] mx-auto ">
-                <div className="flex justify-center mb-[25px]">
-                  <SpiralSVG />
-                </div>
-                <h1 className="text-[#4C1D95] font-playfair text-[50px] font-medium capitalize ">
-                  cách thức{" "}
-                  <span className="text-[#F97316] font-playfair">hoạt động</span>
-                </h1>
-              </div>
-            </div>
-          </div>
+    <section className="relative overflow-hidden bg-[#064E3B] py-20 lg:py-28">
+      {/* Hình khối nghệ thuật */}
+      <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-[#059669]/40 blur-3xl" />
+      <div className="absolute -left-10 bottom-0 h-72 w-72 rounded-full bg-[#10B981]/30 blur-3xl" />
+
+      <div className="relative z-10 mx-auto w-11/12 max-w-[1200px]">
+        <div className="mx-auto max-w-[640px] text-center">
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-[#6EE7B7]">
+            Quy trình
+          </span>
+          <h2 className="mt-4 font-playfair text-[34px] font-bold leading-tight text-white md:text-[46px]">
+            Bắt đầu chỉ với <span className="italic text-[#6EE7B7]">ba bước</span>
+          </h2>
+          <p className="mt-4 text-lg text-white/80">
+            Từ đăng ký đến quản lý toàn bộ nhà trọ — nhanh, gọn, không rườm rà.
+          </p>
+        </div>
+
+        <div className="mt-14">
+          <StepList />
         </div>
       </div>
-      {/* step list */}
-      <StepList />
-    </div>
+    </section>
   );
 };
 

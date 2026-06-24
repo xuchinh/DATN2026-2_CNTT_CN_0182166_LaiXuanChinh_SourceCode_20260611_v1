@@ -1,40 +1,19 @@
-import Image from "next/image";
 import React from "react";
 
 type StepCardProps = {
+  id: number;
   title: string;
   description: string;
-  imageUrl: string;
-  className?: string;
-  imgClassName?: string;
 };
 
-const StepCard: React.FC<StepCardProps> = ({
-  title,
-  description,
-  imageUrl,
-  imgClassName,
-  className,
-}) => {
+const StepCard: React.FC<StepCardProps> = ({ id, title, description }) => {
   return (
-    <div
-      className={`w-[270px] h-[394px] pt-[10px] px-[20px] rounded-[10px] text-white ${className}`}
-    >
-      <div className="flex justify-center h-[165px] items-center">
-        <Image
-          src={imageUrl}
-          alt={title}
-          width={220}
-          height={140}
-          className={imgClassName}
-        />
+    <div className="rounded-[20px] border border-white/10 bg-white/5 p-8 backdrop-blur transition-all duration-300 hover:bg-white/10">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#10B981] to-[#34D399] font-playfair text-2xl font-bold text-white">
+        {String(id).padStart(2, "0")}
       </div>
-      <h3 className="text-[#F97316] font-playfair text-xl font-bold leading-[150%] pt-[40px] pb-[20px]">
-        {title}
-      </h3>
-      <p className="text-white font-sans text-center text-base font-medium leading-[150%]">
-        {description}
-      </p>
+      <h3 className="mt-5 font-playfair text-xl font-bold text-white">{title}</h3>
+      <p className="mt-2 text-[15px] leading-relaxed text-white/75">{description}</p>
     </div>
   );
 };

@@ -3,9 +3,9 @@ import { AdminContext } from '@/library/admin.context';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout } from 'antd';
 import { useContext, useEffect, useState } from 'react';
-import { DownOutlined, SmileOutlined } from '@ant-design/icons';
+import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Dropdown, Space } from 'antd';
+import { Avatar, Dropdown, Space } from 'antd';
 import { signOut } from 'next-auth/react';
 import ModalChangePassword from '../auth/modal.change.password';
 import UserSelect from '../users/table/user.select';
@@ -115,7 +115,12 @@ const AdminHeader = (props: any) => {
                 style={{
                     padding: 0,
                     display: "flex",
-                    background: "#f5f5f5",
+                    background: "#ffffff",
+                    borderBottom: "1px solid #e2e8f0",
+                    boxShadow: "0 1px 2px rgba(16,24,40,0.04)",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 20,
                     justifyContent: "space-between",
                     alignItems: "center"
                 }} >
@@ -142,10 +147,15 @@ const AdminHeader = (props: any) => {
                     <Dropdown menu={{ items }}>
                         <a
                             onClick={(e) => e.preventDefault()}
-                            className="cursor-pointer text-black"
+                            className="flex items-center gap-2 cursor-pointer text-black"
                         >
+                            <Avatar
+                                size={32}
+                                src={session?.data?.results?.[0]?.avatar || undefined}
+                                icon={<UserOutlined />}
+                            />
                             <Space>
-                                Welcome {session?.data?.results?.[0].name ?? ""}
+                                {session?.data?.results?.[0].name ?? ""}
                                 <DownOutlined />
                             </Space>
                         </a>

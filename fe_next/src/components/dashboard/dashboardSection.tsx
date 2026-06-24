@@ -5,10 +5,19 @@ import ElectricityCard from "./chart/electricity.card";
 import AdminIncomeCard from "./chart/income.card";
 import VehiclesCard from "./chart/vehicles.card";
 import WaterCard from "./chart/water.card";
+import PackageRevenueCard from "./chart/package.revenue.card";
+import SummaryCards from "./chart/summary.cards";
 
 
 const DashboardSection = async () => {
     const session = await handleUserLoginv2()
+    const role = session?.data?.results?.[0]?.role;
+
+    // Super admin: xem biểu đồ tròn doanh thu các gói đăng ký
+    if (role === 'SUPER ADMIN') {
+        return <PackageRevenueCard />;
+    }
+
     const status = session?.data?.results?.[0].status;
     const res = await handlePackageUser()
     const featureRoom = '6a19aae7e810464565f1908d';
@@ -23,7 +32,8 @@ const DashboardSection = async () => {
     const isFeatureVehicles = features?.includes(featureVehicles);
 
     return (
-        <div className="">
+        <div className="flex flex-col gap-6">
+            <SummaryCards />
             {(isFeatureRoom && status === true) && <AdminIncomeCard />}
             {(isFeatureWater && status === true) && <WaterCard />}
             {(isFeatureElectricity && status === true) && <ElectricityCard />}

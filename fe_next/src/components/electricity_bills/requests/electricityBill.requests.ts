@@ -198,6 +198,8 @@ export const handleConfirmElectricityBill = async (id: string, status: boolean) 
         body: { _id: id, status: status, fromDate: newFromDate, toDate: newToDate }
     })
     revalidateTag("list-electricity-bills")
+    // Xác nhận thanh toán (status '3') → cập nhật biểu đồ doanh thu tòa nhà
+    revalidateTag("list-income-statistics")
     return res;
 }
 export const handleConfirmElectricityBillNotDate = async (id: string, status: string) => {
@@ -212,6 +214,8 @@ export const handleConfirmElectricityBillNotDate = async (id: string, status: st
         body: { _id: id, status: status }
     })
     revalidateTag("list-electricity-bills")
+    // Xác nhận thanh toán (status '3') → cập nhật biểu đồ doanh thu tòa nhà
+    revalidateTag("list-income-statistics")
     return res;
 }
 

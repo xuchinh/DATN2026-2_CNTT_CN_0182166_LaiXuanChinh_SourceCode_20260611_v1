@@ -23,6 +23,7 @@ const BlogCreate = (props: IProps) => {
     const [form] = Form.useForm();
     const [buildingOptions, setBuildingOptions] = useState<any[]>([]);
     const [titleLength, setTitleLength] = useState(0);
+    const [mainImageError, setMainImageError] = useState(false);
 
     // mảng nội dung động
     const [contents, setContents] = useState<BlogContent[]>([{ index: '', Content1: '', image: '', Content2: '' }]);
@@ -48,7 +49,8 @@ const BlogCreate = (props: IProps) => {
     const handleCloseCreateModal = () => {
         form.resetFields();
         setContents([{ index: '', Content1: '', image: '', Content2: '' }]);
-        setFileList({ mainImage: [] }); // reset về array rỗng
+        setFileList({ mainImage: [] });
+        setMainImageError(false);
         setIsCreateModalOpen(false);
     };
 
@@ -68,21 +70,19 @@ const BlogCreate = (props: IProps) => {
             return null;
         }
     };
-    // Thêm mục mới
+
     const addContent = () => {
         const idx = contents.length;
         setContents([...contents, { index: '', Content1: '', image: '', Content2: '' }]);
         setFileList((prev) => ({ ...prev, [`content_image_${idx}`]: [] }));
     }
 
-    // Xóa mục
     const removeContent = (i: number) => {
         const newList = [...contents];
         newList.splice(i, 1);
         setContents(newList);
     };
 
-    // Cập nhật dữ liệu mục
     const handleContentChange = (i: number, key: keyof BlogContent, value: any) => {
         const newList = [...contents];
         newList[i][key] = value;
@@ -90,7 +90,12 @@ const BlogCreate = (props: IProps) => {
     };
 
     const onFinish = async (values: any) => {
-        // upload ảnh trong từng mục
+        if (!fileList.mainImage?.length) {
+            setMainImageError(true);
+            return;
+        }
+        setMainImageError(false);
+
         const updatedContents = await Promise.all(contents.map(async (item, idx) => {
             const fileKey = `content_image_${idx}`;
             if (fileList[fileKey]?.[0]?.originFileObj) {
@@ -100,7 +105,6 @@ const BlogCreate = (props: IProps) => {
             return item;
         }));
 
-        // upload ảnh chính
         if (fileList.mainImage?.[0]?.originFileObj) {
             values.mainImage = await handleUploadImage(fileList.mainImage[0].originFileObj as File) || '';
         } else {
@@ -123,17 +127,20 @@ const BlogCreate = (props: IProps) => {
             });
         }
     };
-    ;
+
     const renderUpload = (field: string) => (
         <Upload
             accept="image/*"
             maxCount={1}
-            fileList={fileList[field] || []} // luôn là array
+            fileList={fileList[field] || []}
             listType="picture"
             beforeUpload={() => false}
-            onChange={({ fileList: newFileList }) =>
-                setFileList((prev) => ({ ...prev, [field]: newFileList }))
-            }
+            onChange={({ fileList: newFileList }) => {
+                setFileList((prev) => ({ ...prev, [field]: newFileList }));
+                if (field === 'mainImage' && newFileList.length > 0) {
+                    setMainImageError(false);
+                }
+            }}
         >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
         </Upload>
@@ -151,9 +158,22 @@ const BlogCreate = (props: IProps) => {
             <Form layout="vertical" form={form} onFinish={onFinish}>
                 <Row gutter={[15, 15]}>
                     <Col span={24}>
-                        <Form.Item label="Ảnh nền" name="mainImage">
+                        <Form.Item
+                            label={
+                                <span>
+                                    <span style={{ color: '#ff4d4f', marginRight: 4 }}>*</span>
+                                    Ảnh nền
+                                </span>
+                            }
+                            name="mainImage"
+                        >
                             {renderUpload("mainImage")}
                         </Form.Item>
+                        {mainImageError && (
+                            <p style={{ color: '#ff4d4f', fontSize: 12, marginTop: -8, marginBottom: 8 }}>
+                                Vui lòng chọn ít nhất 1 ảnh đầu tiên cho bài viết
+                            </p>
+                        )}
                     </Col>
                     <Col span={24}>
                         <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: 'Nhập tiêu đề' }]}>
@@ -187,7 +207,6 @@ const BlogCreate = (props: IProps) => {
                         </Form.Item>
                     </Col>
 
-                    {/* Nội dung động */}
                     <Col span={24}>
                         <h3>Nội dung bài viết</h3>
                     </Col>
@@ -254,4 +273,3 @@ const BlogCreate = (props: IProps) => {
 };
 
 export default BlogCreate;
-

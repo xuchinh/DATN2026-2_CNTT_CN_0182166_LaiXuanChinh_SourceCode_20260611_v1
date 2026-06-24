@@ -50,7 +50,8 @@ const RoomTable = (props: IProps) => {
     const [isSelectUsersModalOpen, setIsSelectUsersModalOpen] = useState<boolean>(false);
     const [dataSelectUser, setDataSelectUser] = useState<any>(null);
     const formatCurrency = (value: string | number) => {
-        const num = Math.round(Number(value));
+        const parsed = Math.round(Number(value));
+        const num = Number.isFinite(parsed) ? parsed : 0;
         return `${num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')} VNĐ`;
     };
     useEffect(() => {
@@ -96,70 +97,72 @@ const RoomTable = (props: IProps) => {
     const columns = [
         {
             title: "STT",
-            render: (_: any, record: any, index: any) => {
-                return (
-                    <>{(index + 1) + (meta.current - 1) * (meta.pageSize)}</>
-                )
-            }
+            width: 45,
+            render: (_: any, record: any, index: any) => (
+                <>{(index + 1) + (meta.current - 1) * (meta.pageSize)}</>
+            ),
         },
         {
             title: 'Mã phòng',
             dataIndex: 'code',
+            width: 62,
         },
         {
             title: 'Giá',
             dataIndex: 'price',
+            width: 96,
             render: formatCurrency,
         },
         {
             title: 'Nhà',
             render: (record: any) => {
                 const found = buildingOptions.find(f => f._id === record.buildingId);
-                const name = found?.name || 'Không rõ';
-
-                return <span>{name}</span>;
-            }
+                return <span>{found?.name || 'Không rõ'}</span>;
+            },
         },
         {
-            title: 'Người  thuê',
+            title: 'Người thuê',
+            width: 78,
             render: (record: any) => {
                 const found = userOptions.find(f => f._id === record.userId);
-                const name = found?.name || 'Chưa thuê';
-
-                return <span>{name}</span>;
-            }
+                return <span>{found?.name || 'Chưa thuê'}</span>;
+            },
         },
         {
             title: 'Ngày thuê',
+            width: 84,
             render: (record: any) =>
                 record.fromDate ? dayjs(record.fromDate).format('DD/MM/YYYY') : '',
         },
         {
             title: 'Ngày hết hạn',
+            width: 88,
             render: (record: any) =>
                 record.toDate ? dayjs(record.toDate).format('DD/MM/YYYY') : '',
         },
         {
             title: 'Số tháng',
             dataIndex: 'totalMonth',
+            width: 54,
         },
         {
             title: 'Tiền cọc',
             dataIndex: 'payment',
+            width: 96,
             render: formatCurrency,
-
         },
         {
             title: 'Ngày nộp tiền trọ',
+            width: 84,
             render: (record: any) =>
-                record.toDate ? dayjs(record.paymentsDate).format('DD/MM/YYYY') : "",
+                record.paymentsDate ? dayjs(record.paymentsDate).format('DD/MM/YYYY') : "",
         },
         {
             title: 'Người thuê',
+            width: 82,
             render: (record: any) => {
                 const found = userOptions.find(f => f._id === record.userId);
                 const name = found?.name || 'Chưa thuê';
-
                 return (
                     <div className="flex items-center">
                         <span>{name}</span>
@@ -177,10 +180,11 @@ const RoomTable = (props: IProps) => {
                         )}
                     </div>
                 );
-            }
+            },
         },
         {
             title: 'Thanh toán',
+            width: 76,
             render: (record: any) => {
                 const current = record?.statusPayment || '1';
                 const stateConfig: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
@@ -223,6 +227,7 @@ const RoomTable = (props: IProps) => {
         },
         {
             title: 'Đang thuê',
+            width: 66,
             render: (record: any) => {
 
                 if (record?.status === true) {
@@ -259,7 +264,8 @@ const RoomTable = (props: IProps) => {
 
         {
             title: 'Actions',
-            render: (text: any, record: any, index: any) => {
+            width: 78,
+            render: (_: any, record: any) => {
                 return (
                     <>
                         <Tooltip title="Xem thông tin chi tiết">
@@ -428,6 +434,7 @@ const RoomTable = (props: IProps) => {
             >
                 <Table
                     bordered
+                    size="small"
                     dataSource={rooms}
                     columns={columns}
                     rowKey={"_id"}

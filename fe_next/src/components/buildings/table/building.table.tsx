@@ -1,7 +1,7 @@
 'use client'
 
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import { Button, Input, Popconfirm, Table } from "antd"
+import { Button, Input, Popconfirm, Table, Tooltip } from "antd"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { handleDeleteBuilding } from "../requests/building.requests";
@@ -35,55 +35,64 @@ const BuildingTable = (props: IProps) => {
         setFilteredBuildings(buildings);
     }, [buildings]);
 
-    const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
+    const formatCurrency = (value: string | number) => {
+        const num = Number(value);
+        return `${(Number.isFinite(num) ? num : 0).toLocaleString('vi-VN')} VNĐ`;
+    };
     const columns = [
         {
             title: "STT",
-            render: (_: any, record: any, index: any) => {
-                return (
-                    <>{(index + 1) + (meta.current - 1) * (meta.pageSize)}</>
-                )
-            }
+            width: 55,
+            render: (_: any, record: any, index: any) => (
+                <>{(index + 1) + (meta.current - 1) * (meta.pageSize)}</>
+            ),
         },
         {
-            title: 'Name',
+            title: 'Tên nhà',
             dataIndex: 'name',
+            width: 160,
+            ellipsis: { showTitle: false },
+            render: (v: string) => <Tooltip title={v} placement="topLeft">{v}</Tooltip>,
         },
         {
             title: 'Địa chỉ',
             dataIndex: 'address',
+            width: 220,
+            ellipsis: { showTitle: false },
+            render: (v: string) => <Tooltip title={v} placement="topLeft">{v}</Tooltip>,
         },
         {
-            title: 'tổng phòng',
+            title: 'Tổng phòng',
             dataIndex: 'totalRooms',
+            width: 100,
         },
         {
             title: 'Người/phòng',
             dataIndex: 'numberOfPeopleRoom',
+            width: 110,
         },
         {
-            title: 'Phòng đã thuê',
+            title: 'Đã thuê',
             dataIndex: 'numberOfRoomsRented',
+            width: 80,
         },
         {
             title: 'Giá trần',
             dataIndex: 'priceOfRoom',
+            width: 140,
             render: formatCurrency,
         },
         {
-            title: 'giá gửi xe',
+            title: 'Giá gửi xe',
             dataIndex: 'shippingPrice',
+            width: 130,
             render: formatCurrency,
         },
         {
             title: 'Tổng thu nhập',
             dataIndex: "income",
+            width: 150,
             render: formatCurrency,
-            // render: (value: number) => {
-            //     const income = typeof value === 'number' ? value : 0;
-            //     return <>{income.toLocaleString('vi-VN')} đ</>;
-            // }
         },
         {
             title: 'Actions',
@@ -172,16 +181,15 @@ const BuildingTable = (props: IProps) => {
                     dataSource={buildings}
                     columns={columns}
                     rowKey={"_id"}
-                    pagination={
-                        {
-                            current: meta.current,
-                            pageSize: meta.pageSize,
-                            showSizeChanger: true,
-                            total: meta.total,
-                            pageSizeOptions: ['10', '20', '50', '99'],
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-                        }
-                    }
+                    scroll={{ x: 'max-content' }}
+                    pagination={{
+                        current: meta.current,
+                        pageSize: meta.pageSize,
+                        showSizeChanger: true,
+                        total: meta.total,
+                        pageSizeOptions: ['10', '20', '50', '99'],
+                        showTotal: (total, range) => (<div>{range[0]}-{range[1]} trên {total} rows</div>),
+                    }}
                     onChange={onChange}
                 />
             </div>

@@ -50,9 +50,9 @@ const BlogSectionList = ({ props }: BlogSectionListProp) => {
   };
 
   return (
-    <section className="container mx-auto pb-12 flex items-center justify-center bg-[#f5f5f7] ">
-      <div className="relative z-[2]">
-        <BlogList data={blogs} meta={meta} className="items-center" />
+    <section className="relative z-10 mx-auto -mt-20 w-11/12 max-w-[1280px] pb-16">
+      <div className="relative z-[2] w-full">
+        <BlogList data={blogs} meta={meta} />
         {blogs.length <= 0 ? (
           <div className="mt-5">
             <EmptyDataBlock />

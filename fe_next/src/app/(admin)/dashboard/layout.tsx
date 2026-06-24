@@ -17,10 +17,10 @@ const AdminLayout = async ({
     return (
         <AdminContextProvider>
             <div className='flex'>
-                <div className='left-side min-w-[80px]'>
+                <div className='left-side flex-shrink-0'>
                     <AdminSideBar />
                 </div>
-                <div className='right-side flex-1'>
+                <div className='right-side flex-1 min-w-0'>
                     <AdminHeader session={session} />
                     <AdminContent>
                         {children}

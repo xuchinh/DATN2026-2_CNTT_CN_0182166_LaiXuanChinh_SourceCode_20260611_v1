@@ -47,17 +47,10 @@ const PriceItem = ({
       <div className="lg:w-[400px] flex-shrink-0 rounded-tl-[20px] rounded-tr-[20px] rounded-bl-lg rounded-br-lg aspect-[400/168]">
         <div
           className={clsx(
-            "absolute w-[340.672px] lg:w-[400px] rounded-tl-[20px] rounded-tr-[20px] rounded-bl-lg rounded-br-lg aspect-[400/168]",
+            "absolute w-[340.672px] lg:w-[400px] rounded-tl-[20px] rounded-tr-[20px] rounded-bl-lg rounded-br-lg aspect-[400/168] bg-gradient-to-br from-[#34D399] via-[#10B981] to-[#059669]",
             bgImageItemBannerClassName,
           )}
-        >
-          <Image
-            src={bgImageItemBanner || ""}
-            alt="banner"
-            className="object-cover"
-            fill
-          />
-        </div>
+        />
         <div className="absolute lg:pl-[41px] lg:py-5 py-4 z-2 pl-[36px]">
           <h1
             className={clsx(

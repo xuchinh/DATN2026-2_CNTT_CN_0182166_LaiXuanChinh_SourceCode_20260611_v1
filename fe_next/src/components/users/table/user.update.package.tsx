@@ -241,7 +241,7 @@ const UserUpdatePackage = (props: IProps) => {
                     <>
                         <strong >{supperAdmin.bankAccount}</strong> <strong>{supperAdmin.bank}</strong><br />
                         <span>
-                            theo nội dung: "Thanh toán gia hạn gói <strong>{dataUpdate?.name}</strong>  số tiền là: <strong>{calculatedPayment?.toLocaleString('vi-VN')}</strong> " để quản trị viên có thể các nhận
+                            theo nội dung: &quot;Thanh toán gia hạn gói <strong>{dataUpdate?.name}</strong>  số tiền là: <strong>{calculatedPayment?.toLocaleString('vi-VN')}</strong> &quot; để quản trị viên có thể các nhận
                         </span>
                     </>
                 ) : (

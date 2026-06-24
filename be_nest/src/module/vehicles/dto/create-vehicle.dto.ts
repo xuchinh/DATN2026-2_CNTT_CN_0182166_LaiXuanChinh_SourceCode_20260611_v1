@@ -12,9 +12,11 @@ export class CreateVehicleDto {
     @IsOptional()
     @IsMongoId()
     userId: string;
-    @IsNotEmpty({ message: "Phòng không được để trống" })
+    // roomId tùy chọn: khách thuê có thể nhập phương tiện TRƯỚC khi có phòng.
+    // Khi chủ trọ xác nhận cho thuê, xe sẽ được gắn vào phòng tự động.
+    @IsOptional()
     @IsMongoId()
-    roomId: string;
+    roomId?: string;
     @IsOptional()
     fromDate: Date;
     @IsOptional()

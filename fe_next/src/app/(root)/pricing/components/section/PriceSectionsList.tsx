@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { handleOffer } from "../../requests/offers.request";
@@ -60,8 +58,8 @@ const PriceSectionsList = ({
   }, []);
 
   return (
-    <section className="container mx-auto py-12 flex items-center justify-center bg-[#f5f5f7] ">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-[2] pt-12">
+    <section className="relative z-10 mx-auto -mt-20 w-11/12 max-w-[1280px] pb-16 flex items-center justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-[2] pt-4">
         {priceItemList.map((priceItem) => (
           <div
             onClick={() => {
@@ -88,13 +86,7 @@ const PriceSectionsList = ({
             className="w-[340.672px] lg:w-[400px] flex-shrink-0 lg:rounded-t-3xl lg:rounded-b-[20px] rounded-[20px] aspect-[400/577] text-[#313A5A] bg-white hover:shadow-[0px_-6px_64px_0px_rgba(0,_0,_0,_0.15)]"
           >
             {/* Banner header */}
-            <div className="relative w-full rounded-tl-[20px] rounded-tr-[20px] aspect-[400/168] flex items-center overflow-hidden">
-              <Image
-                src={bgImageItemBanner}
-                alt="banner"
-                className="object-cover"
-                fill
-              />
+            <div className="relative w-full rounded-tl-[20px] rounded-tr-[20px] aspect-[400/168] flex items-center overflow-hidden bg-gradient-to-br from-[#34D399] via-[#10B981] to-[#059669]">
               <div className="absolute pl-[41px] py-5 z-10">
                 <p className="text-white text-[14px] font-normal uppercase tracking-widest pb-1 opacity-80">
                   Khuyến mãi

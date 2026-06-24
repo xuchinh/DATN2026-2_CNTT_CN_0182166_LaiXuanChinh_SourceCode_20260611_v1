@@ -4,8 +4,8 @@ import VideoInstructionsSections from "./video-instructions/VideoInstructionsSec
 
 const InstructionsSectionList = () => {
   return (
-    <section className="container mx-auto pb-12 pt-[25px] lg:pt-0 flex items-center justify-center bg-[#f5f5f7] ">
-      <div className="rounded-[20px] md:max-w-[740px] lg:max-w-[1240px] relative max-w-[360px]">
+    <section className="relative z-10 mx-auto -mt-20 w-11/12 max-w-[1280px] pb-16">
+      <div className="md:max-w-[740px] lg:max-w-[1240px] relative max-w-[360px] mx-auto">
         <VideoInstructionsSections />
         <ListInstructions />
         <QAInstructions />

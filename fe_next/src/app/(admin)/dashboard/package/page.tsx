@@ -2,7 +2,7 @@ import PackageSection from "@/components/packages/packageSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Quản lý gói chức năng",
+    title: "Quản lý gói đăng ký",
     description:
         "Quản lý gói chức năng giúp superadmin có thể quản lý các tài khoản mà khách hàng đã dùng",
     keywords:

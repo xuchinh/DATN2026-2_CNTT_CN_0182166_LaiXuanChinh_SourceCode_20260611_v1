@@ -135,20 +135,13 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
             setModalOpen(true);
             return;
         }
-        else if (user[0].status === true) {
-            setModalConfig({
-                type: "error",
-                title: "Bạn đã mua gói chức năng rồi",
-                message: "Vui lòng vào trang ADMIN để gia hạn gói chức năng.",
-                onConfirm: undefined
-            });
-            setModalOpen(true);
-            return;
-        }
+        const isSwitch = user[0]?.status === true;
         setModalConfig({
             type: "confirm",
-            title: "Xác nhận thuê gói chức năng",
-            message: `Bạn có chắc muốn thuê gói chức năng "${packageData?.name}" trong "${values.totalMonth}" tháng?`,
+            title: isSwitch ? "Xác nhận chuyển gói chức năng" : "Xác nhận thuê gói chức năng",
+            message: isSwitch
+                ? `Bạn đang chuyển sang gói "${packageData?.name}" trong "${values.totalMonth}" tháng. Quản trị viên sẽ xác nhận thanh toán trước khi gói mới có hiệu lực.`
+                : `Bạn có chắc muốn thuê gói chức năng "${packageData?.name}" trong "${values.totalMonth}" tháng?`,
             onConfirm: async () => {
                 try {
                     const updateData = {
@@ -162,7 +155,7 @@ const BuyPackageModal = ({ open, onClose, packageData }: BuyPackageModalProps) =
                         status: true,
                         toDate: values.toDate?.format("YYYY-MM-DD"),
                         statusPayment: false,
-                        // KHÔNG cấp role ADMIN ở đây — chờ super admin xác nhận thanh toán mới cấp quyền
+                        // Chờ super admin xác nhận thanh toán — kể cả khi chuyển gói
                     }
 
                     const res = await handleUpdateUserAction(updateData);

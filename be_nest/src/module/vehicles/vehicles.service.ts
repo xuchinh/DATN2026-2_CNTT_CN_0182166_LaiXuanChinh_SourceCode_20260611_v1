@@ -28,11 +28,14 @@ export class VehiclesService {
       status,
     } = createVehicleDto;
 
-    // [Câu 9] Không đăng ký xe cho phòng đang trống
-    const room = await this.roomModel.findById(roomId).select('status code').lean();
-    if (!room) throw new BadRequestException("Phòng không tồn tại.");
-    if (!room.status) {
-      throw new BadRequestException(`Phòng ${room.code} đang trống. Không thể đăng ký xe cho phòng chưa có khách thuê.`);
+    // [Câu 9] Chỉ kiểm tra phòng khi xe có gắn phòng.
+    // Khách thuê có thể nhập phương tiện TRƯỚC khi có phòng (roomId rỗng) → bỏ qua kiểm tra.
+    if (roomId) {
+      const room = await this.roomModel.findById(roomId).select('status code').lean();
+      if (!room) throw new BadRequestException("Phòng không tồn tại.");
+      if (!room.status) {
+        throw new BadRequestException(`Phòng ${room.code} đang trống. Không thể đăng ký xe cho phòng chưa có khách thuê.`);
+      }
     }
 
     const vehicle = await this.vehicleModel.create({

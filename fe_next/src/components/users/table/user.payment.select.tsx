@@ -15,9 +15,10 @@ import {
     handleWaterBill
 } from '../requests/user.requests';
 import dayjs from 'dayjs';
-import { CheckOutlined, CloseOutlined, DeleteTwoTone, LikeOutlined, SwapOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteTwoTone, EditTwoTone, LikeOutlined, SwapOutlined } from '@ant-design/icons';
 import { handleDeleteVehicle } from '@/components/vehicles/requests/vehicles.requests';
 import VehicleCreate from '@/components/vehicles/table/vehicles.create';
+import VehicleEditUser from '@/components/vehicles/table/vehicles.edit.user';
 import { handleConfirmRoom, handleUpdateRoom, handleUser } from '@/components/rooms/requests/room.requests';
 import moment from "moment";
 import { handleAllBuilding, handleBuilding } from '@/components/water_bills/requests/waterBill.requests';
@@ -32,6 +33,8 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
     const [loading, setLoading] = useState(false);
     const [UserPaymentData, setUserPaymentData] = useState<any>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+    const [isEditVehicleOpen, setIsEditVehicleOpen] = useState<boolean>(false);
+    const [vehicleEditData, setVehicleEditData] = useState<any>(null);
     const [roomoptions, setRoomoptions] = useState<any[]>([]);
     const [waterBilloptions, setWaterBilloptions] = useState<any[]>([]);
     const [electricityBilloptions, setElectricityBilloptions] = useState<any[]>([]);
@@ -83,7 +86,12 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
     };
 
     const selectedRoom = roomoptions.find(r => r.userId === UserPaymentData?._id);
-    const selectedVehicles = vehiclesoptions.filter(v => v.roomId === selectedRoom?._id && v.userId === session?.data?.results?.[0]._id);
+    // Xe của chính khách thuê: gồm xe chưa gắn phòng (nhập trước) + xe của phòng đang thuê.
+    // (vehiclesoptions đã loại xe soft-delete từ backend.)
+    const tenantUserId = session?.data?.results?.[0]?._id;
+    const selectedVehicles = vehiclesoptions.filter(
+        v => v.userId === tenantUserId && (!v.roomId || v.roomId === selectedRoom?._id)
+    );
     const selectedBuilding = buildingOptions.filter(bd => bd._id === selectedRoom?.buildingId);
     const building = selectedBuilding[0];
     const selectedAdmin = adminOptions.filter(a => a._id === building?.userId);
@@ -91,8 +99,10 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
     const selectedWaterBills = waterBilloptions.filter(wb => wb.roomId === selectedRoom?._id);
     const selectedElectricBills = electricityBilloptions.filter(eb => eb.roomId === selectedRoom?._id);
 
-    const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
+    const formatCurrency = (value: string | number) => {
+        const num = Number(value);
+        return `${(Number.isFinite(num) ? num : 0).toLocaleString('vi-VN')} VNĐ`;
+    };
 
     const dateFormat = (date: string) => dayjs(date).format('DD/MM/YYYY');
 
@@ -135,6 +145,16 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
         {
             title: 'Hành động', key: 'action', render: (_: any, record: any) => (
                 <>
+                    {record?.status === '1' && (
+                        <Tooltip title="Chỉnh sửa phương tiện">
+                            <span
+                                className="cursor-pointer mx-[5px]"
+                                onClick={() => { setVehicleEditData(record); setIsEditVehicleOpen(true); }}
+                            >
+                                <EditTwoTone twoToneColor="#059669" />
+                            </span>
+                        </Tooltip>
+                    )}
                     <Tooltip title="Bạn muốn xóa phương tiện này">
                         <Popconfirm
                             className="cursor-pointer mx-[5px]"
@@ -400,23 +420,37 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
                                     rowKey="_id"
                                     pagination={false}
                                 />
-                                <div className='flex justify-between items-center my-1'>
-                                    <h3 className='mt-5 font-bold'>Danh sách phương tiện</h3>
-                                    <Button onClick={() => setIsCreateModalOpen(true)}>Thêm phương tiện</Button>
-                                </div>
-                                <Table
-                                    dataSource={selectedVehicles}
-                                    columns={vehicleColumns}
-                                    rowKey="_id"
-                                    pagination={false}
-                                />
-                                <VehicleCreate
-                                    isCreateModalOpen={isCreateModalOpen}
-                                    setIsCreateModalOpen={setIsCreateModalOpen}
-                                    onSuccess={fetchAllData}
-                                />
                             </>
                         )}
+
+                        {/* Phương tiện: luôn hiển thị để khách thuê nhập sẵn TRƯỚC khi có phòng.
+                            Khi chủ trọ xác nhận cho thuê, xe sẽ tự gắn vào phòng và hiện trong dashboard. */}
+                        <div className='flex justify-between items-center my-1'>
+                            <h3 className='mt-5 font-bold'>Danh sách phương tiện</h3>
+                            <Button onClick={() => setIsCreateModalOpen(true)}>Thêm phương tiện</Button>
+                        </div>
+                        {!selectedRoom && (
+                            <p className="text-gray-500 text-sm mb-2">
+                                Bạn có thể nhập phương tiện trước. Khi thuê phòng được duyệt, thông tin sẽ tự gửi tới chủ trọ.
+                            </p>
+                        )}
+                        <Table
+                            dataSource={selectedVehicles}
+                            columns={vehicleColumns}
+                            rowKey="_id"
+                            pagination={false}
+                        />
+                        <VehicleCreate
+                            isCreateModalOpen={isCreateModalOpen}
+                            setIsCreateModalOpen={setIsCreateModalOpen}
+                            onSuccess={fetchAllData}
+                        />
+                        <VehicleEditUser
+                            isEditModalOpen={isEditVehicleOpen}
+                            setIsEditModalOpen={setIsEditVehicleOpen}
+                            dataEdit={vehicleEditData}
+                            onSuccess={fetchAllData}
+                        />
                         {(selectedRoom && (selectedRoom?.statusPayment === '3' && selectedRoom.status === true)) && (
                             <>
                                 <p>Thanh toán bằng cách chuyển khoản cho chủ trọ là <span className='font-bold'>{admin.name}</span> có số tài khoản là: <span className='font-bold'>{admin.bankAccount}</span> ngân hàng: <span className='font-bold'>{admin.bank} </span> </p>

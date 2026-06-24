@@ -1,21 +1,28 @@
 'use client'
 
-import { ImgHTMLAttributes } from 'react'
+import { ImgHTMLAttributes, useState } from 'react'
 
 const FALLBACK_SRC = '/images/no-image.svg'
 
-/**
- * Thẻ <img> thường nhưng tự đổi sang ảnh placeholder khi ảnh nguồn lỗi
- * (file đã bị xóa khỏi uploads → 404). Dùng được trong cả server component.
- */
-const ImgFallback = (props: ImgHTMLAttributes<HTMLImageElement>) => {
+interface ImgFallbackProps extends ImgHTMLAttributes<HTMLImageElement> {
+  hideOnError?: boolean
+}
+
+const ImgFallback = ({ hideOnError, ...props }: ImgFallbackProps) => {
+  const [hidden, setHidden] = useState(false)
+  if (hidden) return null
+
   return (
     <img
       {...props}
       onError={(e) => {
-        const target = e.currentTarget
-        if (!target.src.endsWith(FALLBACK_SRC)) {
-          target.src = FALLBACK_SRC
+        if (hideOnError) {
+          setHidden(true)
+        } else {
+          const target = e.currentTarget
+          if (!target.src.endsWith(FALLBACK_SRC)) {
+            target.src = FALLBACK_SRC
+          }
         }
       }}
     />

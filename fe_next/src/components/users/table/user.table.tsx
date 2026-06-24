@@ -67,8 +67,10 @@ const UserTable = (props: IProps) => {
         };
         fetchPackageOptions();
     }, []);
-    const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
+    const formatCurrency = (value: string | number) => {
+        const num = Number(value);
+        return `${(Number.isFinite(num) ? num : 0).toLocaleString('vi-VN')} VNĐ`;
+    };
     const columns = [
         {
             title: "STT",

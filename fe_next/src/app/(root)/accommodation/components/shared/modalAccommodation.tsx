@@ -1,7 +1,8 @@
 import React from "react";
+import Link from "next/link";
 import SVGCancel from "../svgs/SVGCancel";
 import SVGTick from "../svgs/SVGTick";
-
+import { LockOutlined } from "@ant-design/icons";
 
 interface ModalProps {
     isOpen: boolean;
@@ -10,51 +11,79 @@ interface ModalProps {
     message: string;
     onClose: () => void;
     onConfirm?: () => void;
+    loginRequired?: boolean;
 }
 
-const ModalAccommodation: React.FC<ModalProps> = ({ isOpen, type, title, message, onClose, onConfirm }) => {
+const ModalAccommodation: React.FC<ModalProps> = ({
+    isOpen, type, title, message, onClose, onConfirm, loginRequired
+}) => {
     if (!isOpen) return null;
 
-    const icon =
-        type === "error" ? (
-            <SVGCancel className="w-12 h-12 text-red-500" />
-        ) : (
-            <SVGTick className={`w-12 h-12 ${type === "success" ? "text-green-500" : "text-blue-500"}`} />
-        );
+    const icon = loginRequired ? (
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#ECFDF5]">
+            <LockOutlined className="text-[28px] text-[#059669]" />
+        </div>
+    ) : type === "error" ? (
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+            <SVGCancel className="h-8 w-8 text-red-500" />
+        </div>
+    ) : (
+        <div className={`flex h-14 w-14 items-center justify-center rounded-full ${type === "success" ? "bg-[#ECFDF5]" : "bg-[#ECFDF5]"}`}>
+            <SVGTick className={`h-8 w-8 ${type === "success" ? "text-[#059669]" : "text-[#059669]"}`} />
+        </div>
+    );
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] text-center">
-                <div className="flex justify-center mb-4">{icon}</div>
-                <h2 className="text-xl font-semibold mb-2">{title}</h2>
-                <p className="text-gray-600 mb-4">{message}</p>
-                <div className="flex justify-center gap-3">
-                    {type === "confirm" ? (
-                        <>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4">
+            <div className="w-full max-w-[380px] overflow-hidden rounded-[20px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
+                {/* Header accent */}
+                <div className="h-1 w-full bg-gradient-to-r from-[#10B981] to-[#059669]" />
+
+                <div className="px-8 py-7 text-center">
+                    <div className="mb-4 flex justify-center">{icon}</div>
+                    <h2 className="mb-2 font-playfair text-[20px] font-bold text-[#064E3B]">{title}</h2>
+                    <p className="mb-6 text-[14px] leading-relaxed text-gray-500">{message}</p>
+
+                    <div className="flex justify-center gap-3">
+                        {type === "confirm" ? (
+                            <>
+                                <button
+                                    onClick={onClose}
+                                    className="rounded-[10px] border border-[#E5E7EB] px-5 py-2.5 text-[14px] font-medium text-gray-600 transition hover:bg-gray-50"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={() => { onConfirm?.(); onClose(); }}
+                                    className="rounded-[10px] bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)] transition hover:shadow-[0_6px_16px_rgba(5,150,105,0.38)]"
+                                >
+                                    Xác nhận
+                                </button>
+                            </>
+                        ) : loginRequired ? (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="rounded-[10px] bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)] transition hover:shadow-[0_6px_16px_rgba(5,150,105,0.38)]"
+                                >
+                                    Đăng nhập
+                                </Link>
+                                <button
+                                    onClick={onClose}
+                                    className="rounded-[10px] border border-[#E5E7EB] px-5 py-2.5 text-[14px] font-medium text-gray-600 transition hover:bg-gray-50"
+                                >
+                                    Đóng
+                                </button>
+                            </>
+                        ) : (
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition-colors"
+                                className="rounded-[10px] bg-gradient-to-r from-[#10B981] to-[#059669] px-8 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)] transition hover:shadow-[0_6px_16px_rgba(5,150,105,0.38)]"
                             >
-                                Hủy
+                                Đóng
                             </button>
-                            <button
-                                onClick={() => {
-                                    onConfirm && onConfirm();
-                                    onClose();
-                                }}
-                                className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition-colors"
-                            >
-                                Xác nhận
-                            </button>
-                        </>
-                    ) : (
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                        >
-                            Đóng
-                        </button>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

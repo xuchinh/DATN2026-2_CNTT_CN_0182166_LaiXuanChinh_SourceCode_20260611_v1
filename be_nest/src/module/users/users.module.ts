@@ -8,6 +8,7 @@ import { Building, BuildingSchema } from '../buildings/schemas/building.schemas'
 import { WaterBill, WaterBillSchema } from '../water_bills/schemas/water_bill.schemas';
 import { ElectricityBill, ElectricityBillSchema } from '../electricity_bills/schemas/electricity_bill.schemas';
 import { Vehicle, VehicleSchema } from '../vehicles/schemas/vehicle.schemas';
+import { Package, PackageSchema } from '../packages/schemas/package.schemas';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -17,6 +18,7 @@ import { Vehicle, VehicleSchema } from '../vehicles/schemas/vehicle.schemas';
     { name: WaterBill.name, schema: WaterBillSchema },
     { name: ElectricityBill.name, schema: ElectricityBillSchema },
     { name: Vehicle.name, schema: VehicleSchema },
+    { name: Package.name, schema: PackageSchema },
   ])],
   controllers: [UsersController],
   providers: [UsersService],

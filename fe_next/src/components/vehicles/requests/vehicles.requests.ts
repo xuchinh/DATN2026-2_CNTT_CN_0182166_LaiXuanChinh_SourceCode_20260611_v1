@@ -182,6 +182,8 @@ export const handleConfirmVehicle = async (id: string, status: string) => {
         body: { _id: id, status: status, fromDate: newFromDate, toDate: newToDate }
     })
     revalidateTag("list-vehicles")
+    // Xác nhận thanh toán phương tiện (status '3') → cập nhật biểu đồ doanh thu tòa nhà
+    revalidateTag("list-income-statistics")
     return res;
 }
 

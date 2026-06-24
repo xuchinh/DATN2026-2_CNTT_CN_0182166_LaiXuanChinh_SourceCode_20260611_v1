@@ -1,25 +1,24 @@
 import InterestList from "@/app/(root)/components/section/home-page-interest/InterestList";
-import SpiralSVG from "@/app/(root)/components/svgs/SpiralSVG";
 
 const HomePageInterest = () => {
   return (
-    <div className="h-[845px] bg-gradient-to-b from-[#F3E8FF] to-[#E9D5FF]">
-      {/* heading */}
-      <div className=" text-center flex justify-center pt-[82px] ">
-        <h1 className="text-[#4C1D95] text-center font-playfair lg:text-[50px] italic font-medium leading-[75px] max-w-[720px] text-[36px] md:text-[48px]">
-          Lợi Ích Khi Sử Dụng Phần Mềm
-          <span className="not-italic font-playfair"> Của Chúng Tôi</span>
-        </h1>
+    <section className="bg-gradient-to-b from-[#ECFDF5] to-[#F6FBF8] py-20 lg:py-28">
+      <div className="mx-auto w-11/12 max-w-[1200px]">
+        <div className="mx-auto max-w-[680px] text-center">
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-[#059669]">
+            Lợi ích
+          </span>
+          <h2 className="mt-4 font-playfair text-[34px] font-bold leading-tight text-[#064E3B] md:text-[46px]">
+            Nhẹ đầu hơn, làm chủ
+            <span className="italic text-[#059669]"> mọi con số</span>
+          </h2>
+        </div>
+
+        <div className="mt-14">
+          <InterestList />
+        </div>
       </div>
-      {/* svg */}
-      <div className="flex justify-center  mt-7 mb-[68px] ">
-        <SpiralSVG />
-      </div>
-      {/* description items */}
-      <div className="px-[8%]">
-        <InterestList />
-      </div>
-    </div>
+    </section>
   );
 };
 

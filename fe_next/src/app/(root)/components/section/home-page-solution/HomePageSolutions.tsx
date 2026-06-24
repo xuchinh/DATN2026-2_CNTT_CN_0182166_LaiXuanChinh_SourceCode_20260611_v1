@@ -1,56 +1,43 @@
-import Image from "next/image";
-
-import ActionButton from "@/components/shared/ActionButton";
+import Link from "next/link";
 
 const HomePageSolutions = () => {
   return (
-    <div className="h-[893px] bg-[#FAF5FF] -mt-[7%]">
-      {/* content */}
-      <div className="max-w-[1220px] mx-auto flex justify-between items-center">
-        {/* LEFT: text (flipped — was originally on right) */}
-        <div className="max-w-[530px] pt-[240px]">
-          {/* heading */}
-          <div className="mb-5 max-w-[530px]">
-            <h1 className="text-[#F97316] font-playfair text-[50px] italic font-medium ">
-              Giải Pháp Tối Ưu
-              <span className="text-[#4C1D95] not-italic font-playfair">
-                {" "}
-                Cho Các Chủ Nhà Trọ
-              </span>
-            </h1>
-          </div>
-          {/* promotion */}
-          <div className="mb-11">
-            <p className="text-[#4C1D95] font-sans text-xl font-normal leading-[150%] max-w-[440px]">
-              Chào mừng bạn đến với RoomHub, nơi cung cấp phần mềm quản lý
-              phòng trọ và nhà cho thuê hàng đầu. Với giải pháp toàn diện của
-              chúng tôi, việc quản lý nhà trọ chưa bao giờ dễ dàng và hiệu quả
-              đến thế.
-            </p>
-          </div>
-          {/* action button */}
-          <div>
-            <ActionButton
+    <section className="bg-[#F6FBF8] py-20 lg:py-28">
+      <div className="mx-auto grid w-11/12 max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        {/* Nội dung */}
+        <div>
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-[#059669]">
+            Vì sao chọn RoomHub
+          </span>
+          <h2 className="mt-4 font-playfair text-[34px] font-bold leading-tight text-[#064E3B] md:text-[46px]">
+            Một nơi gọn gàng cho
+            <span className="italic text-[#059669]"> cả căn nhà của bạn</span>
+          </h2>
+          <p className="mt-5 max-w-[480px] text-lg leading-relaxed text-[#3F5C50]">
+            Thay vì sổ sách rối rắm, bạn có một bảng điều khiển duy nhất: theo dõi
+            phòng trống, ghi điện nước, thu tiền và xem doanh thu — tất cả đều rõ ràng.
+          </p>
+          <div className="mt-8">
+            <Link
               href="/pricing"
-              className="text-center text-lg px-8 py-4 bg-[#F97316] border-[#F97316] hover:bg-[#EA6C0A] hover:border-[#EA6C0A]"
+              className="inline-block rounded-full bg-[#059669] px-8 py-4 font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#047857] hover:scale-[1.02]"
             >
               Xem chi tiết
-            </ActionButton>
+            </Link>
           </div>
         </div>
 
-        {/* RIGHT: image (flipped — was originally on left) */}
-        <div className="max-w-[620px] pt-[169px]">
-          <Image
-            src="/images/home-page/chart.png"
-            width={550}
-            height={550}
-            alt="dashboard picture"
-            className="w-[184%] max-w-none -translate-x-[10%]"
-          />
+        {/* Hình khối nghệ thuật thay cho ảnh dashboard */}
+        <div className="relative h-[360px]">
+          <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#059669] to-[#10B981]" />
+          <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-[#D1FAE5]" />
+          <div className="absolute bottom-8 left-8 h-24 w-44 rounded-2xl bg-white/20 backdrop-blur" />
+          <div className="absolute right-10 top-12 h-16 w-16 rotate-12 rounded-xl border-2 border-white/40" />
+          <div className="absolute bottom-12 right-12 h-10 w-10 rounded-full bg-white/40" />
+          <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30" />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

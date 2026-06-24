@@ -216,7 +216,8 @@ export const handleCreateWaterBill = async (id: string) => {
         headers: {
             Authorization: `Bearer ${session?.user?.access_token}`,
         },
-        body: { roomId: id, fromDate: fromDate, toDate: fromDate }
+        // Hóa đơn mới khi xác nhận thuê: số nước + giá nước + thành tiền = 0 để chủ trọ tự chỉnh
+        body: { roomId: id, fromDate: fromDate, toDate: fromDate, amount: '0', waterPrice: '0', payment: '0' }
     })
     revalidateTag("list-water-bills")
     return res;
@@ -230,7 +231,8 @@ export const handleCreateElectricityBill = async (id: string) => {
         headers: {
             Authorization: `Bearer ${session?.user?.access_token}`,
         },
-        body: { roomId: id, fromDate: fromDate, toDate: fromDate }
+        // Hóa đơn mới khi xác nhận thuê: số điện + giá điện + thành tiền = 0 để chủ trọ tự chỉnh
+        body: { roomId: id, fromDate: fromDate, toDate: fromDate, amount: '0', eletricPrice: '0', payment: '0' }
     })
     revalidateTag("list-electricity-bills")
     return res;

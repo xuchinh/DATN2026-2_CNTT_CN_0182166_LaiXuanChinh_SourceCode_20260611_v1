@@ -7,6 +7,12 @@ import FacebookSVG from "@/components/main-layout/svgs/FacebookSVG";
 import FlySVG from "@/components/main-layout/svgs/FlySVG";
 import InstagramSVG from "@/components/main-layout/svgs/InstagramSVG";
 import TwitterSVG from "@/components/main-layout/svgs/TwitterSVG";
+import {
+  EnvironmentOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  MessageFilled,
+} from "@ant-design/icons";
 
 const Footer = () => {
 
@@ -74,67 +80,84 @@ const Footer = () => {
       <div
         className={"absolute top-0 left-0 w-full h-full -z-10 bg-[#F5F5F7]"}
       ></div>
-      {/* background elipse */}
-      <div className="bg-[url('/images/footer/footer-background.png')] absolute bottom-0 left-0 w-full h-4/5  bg-no-repeat bg-cover bg-center -z-10"></div>
-      {/* form */}
-      <div className="w-10/12 rounded-[1.25rem] border-4 border-[#7C3AED] mx-auto  py-10 px-16 bg-white flex ">
-        <div className="w-1/2 pr-[70px]">
-          <h1 className="text-[#4C1D95] font-serif text-[3.125rem] font-medium mb-1.5">
-            Liên Hệ Với Chúng Tôi
-          </h1>
-          <p className="text-[#4C1D95] font-sans text-xl font-normal leading-[30px] mb-2">
-            Nếu bạn có bất kỳ câu hỏi hoặc cần hỗ trợ, hãy liên hệ với chúng tôi
-            qua:
-          </p>
-          <Image
-            src="/images/footer/question-picture.png"
-            width={335}
-            height={294}
-            alt="Picture of the author"
-          />
-        </div>
-        <div className="flex flex-col gap-[42px]">
-          {/* <h1 className="max-w-[550px] text-[#4C1D95] font-playfair text-2xl md:text-5xl font-normal leading-[100%] hidden md:block">
-            {contactInfo.discorverUs.label}
-          </h1> */}
-          {/* <h1 className="max-w-[225px] text-[#4C1D95] font-playfair text-4xl md:text-5xl font-normal leading-[130%] block md:hidden">
-            {contactInfo.discorverUs.label}
-          </h1> */}
-          <p className="max-w-[531px] text-[#4C1D95] font-inter text-[22px] font-normal leading-[159%]">
-            {contactInfo.discorverUs.description}
-          </p>
-          <div>
-            <h3 className="max-w-[350px] text-[#4C1D95] text-[30px] font-normal leadding-[93.33%]">
-              {contactInfo.visitUs.label}
-            </h3>
-            <a
-              href="https://maps.app.goo.gl/Z7i5WZ6G1RwkNQbz9"
-              target="_blank"
-              className="max-w-[401px] text-[#4C1D95] font-inter text-xl font-normal leading-[175%] underline transition-all duration-500 inline-block"
-            >
-              <span className="max-w-[401px] text-[#4C1D95] text-xl font-normal leading-[175%] underline transition-all duration-500 inline-block">
+      {/* nền xanh đậm đồng bộ với header */}
+      <div className="absolute bottom-0 left-0 w-full h-4/5 bg-[#064E3B] -z-10"></div>
+      {/* card liên hệ */}
+      <div className="w-10/12 mx-auto overflow-hidden rounded-[20px] border border-[#A7F3D0] bg-white shadow-[0_8px_40px_rgba(5,150,105,0.12)]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
+          {/* ─── Nội dung ─── */}
+          <div className="flex flex-col gap-6 px-10 py-10 lg:px-14">
+            {/* Badge */}
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#ECFDF5] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#059669]">
+              <MessageFilled />
+              Hỗ trợ 24/7
+            </span>
+
+            <h2 className="font-playfair text-[2rem] font-bold leading-tight text-[#064E3B] lg:text-[2.4rem]">
+              Liên Hệ Với<br />
+              <span className="text-[#059669]">Chúng Tôi</span>
+            </h2>
+
+            <p className="max-w-[420px] text-[15px] leading-relaxed text-[#4B5563]">
+              {contactInfo.discorverUs.description}
+            </p>
+
+            {/* Items */}
+            <div className="flex flex-col gap-3">
+              <a
+                href="https://maps.app.goo.gl/Z7i5WZ6G1RwkNQbz9"
+                target="_blank"
+                className="group flex items-center gap-3 text-[15px] text-[#374151] transition-colors hover:text-[#059669]"
+              >
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-[#059669] transition-colors group-hover:bg-[#059669] group-hover:text-white">
+                  <EnvironmentOutlined />
+                </span>
                 {contactInfo.visitUs.description}
-              </span>
-            </a>
-          </div>
-          <div>
-            <h3 className="text-[#4C1D95] font-inter  text-[30px] font-normal leadding-[106.667%%] mb-[7px]">
-              {contactInfo.email.label}
-            </h3>
-            <div className="flex flex-col gap-2">
-              <span className="text-[#7C3AED] font-inter text-[22px] font-normal leading-[159%]  transition-all duration-500">
+              </a>
+              <a
+                href="mailto:laixuanchinh@gmail.com"
+                className="group flex items-center gap-3 text-[15px] text-[#374151] transition-colors hover:text-[#059669]"
+              >
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-[#059669] transition-colors group-hover:bg-[#059669] group-hover:text-white">
+                  <MailOutlined />
+                </span>
                 {contactInfo.email.description}
-              </span>
+              </a>
+              <a
+                href="tel:0916602763"
+                className="group flex items-center gap-3 text-[15px] text-[#374151] transition-colors hover:text-[#059669]"
+              >
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-[#059669] transition-colors group-hover:bg-[#059669] group-hover:text-white">
+                  <PhoneOutlined />
+                </span>
+                {contactInfo.phoneNumbers.description}
+              </a>
             </div>
           </div>
-          <div>
-            <h3 className="text-[#4C1D95] font-inter text-[30px] font-normal leading-[106.667%%] mb-[18px]">
-              {contactInfo.phoneNumbers.label}
-            </h3>
-            <div className="flex flex-col gap-2">
-              <span className="text-[#7C3AED] font-inter text-[22px] font-normal leading-[124%] underline  transition-all duration-500">
-                {contactInfo.phoneNumbers.description}
-              </span>
+
+          {/* ─── Art panel phải ─── */}
+          <div className="relative hidden items-center justify-center overflow-hidden bg-gradient-to-br from-[#059669] to-[#047857] lg:flex">
+            <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10" />
+            <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/10" />
+            <div className="relative z-10 flex flex-col items-center gap-4 text-center">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/20">
+                <MessageFilled className="text-[48px] text-white" />
+              </div>
+              <p className="px-6 text-[13px] font-medium leading-relaxed text-white/80">
+                Phản hồi trong<br />
+                <span className="text-[20px] font-bold text-white">24 giờ</span>
+              </p>
+              <div className="flex gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+                  <MailOutlined className="text-white" />
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+                  <PhoneOutlined className="text-white" />
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+                  <EnvironmentOutlined className="text-white" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -196,8 +219,8 @@ const Footer = () => {
 
               {/* credit */}
               <div className="flex space-x-5 items-end">
-                <span className="font-sans text-base font-normal text-white ">
-                  ©{new Date().getFullYear()} by Xuân Chinh
+                <span className="font-sans text-base font-normal text-[#A7F3D0] ">
+                  ©{new Date().getFullYear()} by Xuân Chính
                 </span>
               </div>
             </div>

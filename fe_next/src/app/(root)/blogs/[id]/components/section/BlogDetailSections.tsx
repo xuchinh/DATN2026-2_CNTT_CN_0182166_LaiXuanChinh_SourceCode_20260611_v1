@@ -1,9 +1,8 @@
 
-import BannerImage from "@/components/main-layout/sections/banner/BannerImage";
 import type { Blog } from "../../../types/blog";
 import DetailSection from "./blog-detail/DetailSection";
-import BannerContents from "@/components/main-layout/sections/banner/BannerContent";
 import RelatedPosts from "./RelatedPosts";
+import PageBanner from "@/components/main-layout/sections/banner/PageBanner";
 
 type DetailSectionProp = {
   blog: Blog;
@@ -12,14 +11,7 @@ type DetailSectionProp = {
 const BlogDetailSections = ({ blog }: DetailSectionProp) => {
   return (
     <div>
-      <BannerImage />
-      <BannerContents
-        heading={blog.title}
-        headingClassName="max-w-[1032px]"
-        sizeBannerClassName="lg:pb-0 md:max-h-none"
-        supHeadingClassName="hidden h-0"
-        descriptionClassName="hidden h-0"
-      />
+      <PageBanner title={blog.title} titleClassName="max-w-[900px] mx-auto" />
       <DetailSection blog={blog} />
       <RelatedPosts currentPostId={blog._id} />
     </div>

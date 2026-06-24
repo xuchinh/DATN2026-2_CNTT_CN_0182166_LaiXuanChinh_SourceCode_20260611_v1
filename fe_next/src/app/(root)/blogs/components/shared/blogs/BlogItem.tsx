@@ -12,45 +12,32 @@ type BlogItemProp = {
 
 const BlogItem = ({ blogs }: BlogItemProp) => {
   return (
-    <li className="aspect-[398/633] rounded-[14px] flex flex-col items-center gap-8 lg:w-[398px] w-[320px] p-3 lg:p-[18px] bg-white transition-all duration-300 cursor-pointer group hover:rounded-[14px] border-[2px] border-white hover:border-[#EEB537] hover:bg-[#FFF] hover:shadow-[0px_-6px_64px_0px_rgba(0,_0,_0,_0.15)] mx-auto">
-      <Link
-        href={`/blogs/${blogs._id}`}
-        className="relative items-center gap-x-4 bg-white"
-      >
-        <div className="relative h-1/2 aspect-[360/312] lg:w-[360px] w-[296px] rounded-[6px]">
+    <li className="group flex w-full flex-col rounded-[14px] border-[2px] border-[#E5E7EB] bg-white p-4 transition-all duration-300 hover:border-[#EEB537] hover:shadow-[0px_10px_40px_0px_rgba(0,0,0,0.10)]">
+      <Link href={`/blogs/${blogs._id}`} className="block w-full">
+        {/* Ảnh thumbnail co giãn theo thẻ */}
+        <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[8px]">
           <ImageWithFallback
             src={`${blogs.mainImage}`}
             fill
             alt="template thumbnail"
-            className="rounded-t-md object-cover rounded-[6px]"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
-        <div className="py-8 transition-colors w-[296px] lg:w-[360px]">
-          <p className="text-[14px] text-description font-normal leading-5 pb-3 flex gap-2 items-center">
+        <div className="w-full pt-4">
+          <p className="flex items-center gap-2 pb-2 text-[13px] font-normal leading-5 text-description">
             <SVGCalendarBlank />
             {new Date(blogs.createdAt).toLocaleDateString("vi-VN")}
             <SVGNotebook />
             {"5 Phút đọc"}
           </p>
-          <p className="line-clamp-2 text-[18px] lg:text-[20px] text-description font-semibold leading-7 mb-4">
-            {blogs.title?.length > 133 ? blogs.title.slice(0, 133) + '...' : blogs.title}
+          <p className="mb-2 line-clamp-2 text-[17px] font-semibold leading-6 text-description">
+            {blogs.title?.length > 133 ? blogs.title.slice(0, 133) + "..." : blogs.title}
           </p>
-          <p className="text-[14px] text-description font-normal leading-5 mb-6 line-clamp-3">
+          <p className="mb-4 line-clamp-3 text-[14px] font-normal leading-5 text-description">
             {blogs.introduce}
           </p>
-          {/* {blogs.buildingAddress && (
-            <p className="text-[14px] text-description font-normal leading-5 mb-1 line-clamp-2">
-              {blogs.buildingAddress}
-            </p>
-          )} */}
-
-          {/* {blogs.buildingPrice && (
-            <p className="text-[14px] text-[#F97316] font-semibold leading-5 mb-4">
-              {Number(blogs.buildingPrice).toLocaleString("vi-VN")} VNĐ/tháng
-            </p>
-          )} */}
-          <div className="lg:w-[161px] lg:h-[56px] w-[140px] h-[46px] flex items-center justify-center rounded-lg border-[2px] border-[#9199A6] transition-colors duration-300 group-hover:border-[#EEB537] group-hover:text-[#EEB537]">
-            <p className="flex items-center font-sora text-[14px] font-semibold leading-[56px] text-left">
+          <div className="flex h-[44px] w-[136px] items-center justify-center rounded-lg border-[2px] border-[#9199A6] transition-colors duration-300 group-hover:border-[#EEB537] group-hover:text-[#EEB537]">
+            <p className="flex items-center font-sora text-[14px] font-semibold">
               {"Đọc thêm"} <SVGArrowRight className="ml-2" />
             </p>
           </div>

@@ -6,39 +6,35 @@ const InterestList: React.FC = () => {
   const features = [
     {
       id: 1,
-      title: "Tiết Kiệm Thời Gian",
+      icon: "⏱️",
+      title: "Tiết kiệm thời gian",
       description:
-        "Phần mềm tự động hóa giúp bạn giảm bớt khối lượng công việc thủ công, dành nhiều thời gian hơn cho các hoạt động kinh doanh khác.",
-      imageUrl: "/images/home-page/time.png",
-      textCustomClassName: "max-w-[300px]",
+        "Tự động hóa thay bạn làm việc thủ công, để bạn dành thời gian cho điều quan trọng hơn.",
     },
     {
       id: 2,
-      title: "Tối Ưu Hóa Lợi Nhuận",
+      icon: "💰",
+      title: "Tối ưu lợi nhuận",
       description:
-        "Quản lý hiệu quả và các chiến lược giá thuê giúp tối đa hóa lợi nhuận từ hoạt động cho thuê.",
-      imageUrl: "/images/home-page/money.png",
-      textCustomClassName: "max-w-[300px]",
+        "Quản lý chặt chẽ và chiến lược giá thuê hợp lý giúp nguồn thu của bạn tăng đều.",
     },
     {
       id: 3,
-      title: "Trải Nghiệm Người Dùng Tuyệt Vời",
+      icon: "✨",
+      title: "Trải nghiệm mượt mà",
       description:
-        "Giao diện thân thiện và dễ sử dụng giúp bạn nhanh chóng làm quen và sử dụng hệ thống mà không gặp khó khăn.",
-      imageUrl: "/images/home-page/rating.png",
-      textCustomClassName: "max-w-[365px]",
+        "Giao diện thân thiện, dễ làm quen — bạn sử dụng thành thạo ngay từ lần đầu.",
     },
   ];
 
   return (
-    <div className="flex justify-between">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {features.map((feature) => (
         <FeatureCard
           key={feature.id}
+          icon={feature.icon}
           title={feature.title}
           description={feature.description}
-          imageUrl={feature.imageUrl}
-          textCustomClassName={feature.textCustomClassName}
         />
       ))}
     </div>

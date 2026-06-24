@@ -71,6 +71,12 @@ export class User {
     bank: string
     @Prop()
     bankAccount: string
+    // Lịch sử doanh thu gói — mỗi lần super admin xác nhận thanh toán (mua mới / chuyển gói / gia hạn)
+    // push thêm 1 entry. Bất biến: KHÔNG bao giờ xóa kể cả khi user chuyển/hủy/hết hạn gói
+    // → doanh thu gói không bị mất (giống pattern paymentHistory của rooms).
+    // packageCode được snapshot để lịch sử vẫn đúng tên dù package bị sửa/xóa sau này.
+    @Prop({ type: [{ date: Date, packageId: { type: mongoose.Schema.Types.ObjectId, ref: Package.name }, packageCode: String, amount: Number }], default: [] })
+    paymentHistory: { date: Date; packageId?: mongoose.Schema.Types.ObjectId; packageCode: string; amount: number }[];
     // Soft-delete: ẩn khỏi danh sách + chặn đăng nhập, vẫn giữ bản ghi để khôi phục / tránh mồ côi dữ liệu
     @Prop({ default: false })
     isDeleted: boolean;

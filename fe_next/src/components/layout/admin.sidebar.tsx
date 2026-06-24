@@ -82,22 +82,37 @@ export default function AdminSideBar() {
         return null;
     }
     return (
-        <Sider collapsed={collapseMenu}>
+        <Sider
+            collapsed={collapseMenu}
+            theme="light"
+            width={250}
+            style={{
+                position: "sticky",
+                top: 0,
+                height: "100vh",
+                overflow: "auto",
+                background: "#ffffff",
+                borderRight: "1px solid #e2e8f0",
+                boxShadow: "0 1px 2px rgba(16,24,40,0.04)",
+            }}
+        >
             <Menu
-                className="h-[100vh-180px]"
+                theme="light"
+                className="border-r-0 pt-1"
+                style={{ background: "transparent" }}
                 mode="inline"
                 defaultSelectedKeys={['dashboard']}
                 items={[
                     {
                         key: 'grp',
                         label: (
-                            <Link href="/">
+                            <Link href="/" className="flex justify-center py-2">
                                 <Image
                                     src="/images/header/header-logo.png"
                                     width={140}
                                     height={28}
                                     alt="RoomHub"
-                                    className="cursor-pointer py-1"
+                                    className="cursor-pointer"
                                 />
                             </Link>
                         ),
@@ -105,13 +120,13 @@ export default function AdminSideBar() {
                         children: [
                             {
                                 key: "dashboard",
-                                label: <Link href={"/dashboard"}>Dashboard</Link>,
+                                label: <Link href={"/dashboard"}>Thống kê doanh thu</Link>,
                                 icon: <AppstoreOutlined />,
                             },
                             ...menuItems,
                             {
                                 key: "blog 1",
-                                label: <Link href={"/dashboard/blog"}>Manage Blogs</Link>,
+                                label: <Link href={"/dashboard/blog"}>Quản lý bài viết</Link>,
                                 icon: <SVGBlog className="w-[18px] h-[18px]" />,
                             },
 

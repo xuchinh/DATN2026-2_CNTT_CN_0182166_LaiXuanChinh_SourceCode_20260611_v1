@@ -213,10 +213,35 @@ export class RoomsService {
 
     const result = await this.roomModel.updateOne({ _id }, updateQuery);
 
-    // Khi phòng hết hạn thuê (status=false): soft-delete xe của phòng này
-    // → gỡ xe khỏi danh sách phương tiện nhưng vẫn giữ income history (xe đã confirm status '3')
+    // Khi phòng được xác nhận cho thuê (status=true): gắn các phương tiện mà khách đã nhập sẵn
+    // (chưa gắn phòng nào) vào phòng này → chủ trọ nhìn thấy trong dashboard quản lý phương tiện.
+    if (setData.status === true) {
+      const room = await this.roomModel.findById(_id).select('userId buildingId').lean();
+      if (room?.userId) {
+        const building = await this.buildingModel.findById(room.buildingId).select('shippingPrice').lean();
+        await this.vehicleModel.updateMany(
+          {
+            userId: room.userId,
+            isDeleted: { $ne: true },
+            $or: [{ roomId: { $exists: false } }, { roomId: null }],
+          },
+          {
+            roomId: _id,
+            ...(building?.shippingPrice ? { shippingPrice: building.shippingPrice } : {}),
+          }
+        );
+      }
+    }
+
+    // Khi phòng hết hạn thuê (status=false): soft-delete xe + hóa đơn điện/nước của phòng này.
+    // → Gỡ khỏi danh sách quản lý của chủ trọ để khi có khách thuê lại (kể cả khách cũ),
+    //   hóa đơn điện/nước được sinh MỚI từ 0 (không bị chặn trùng tháng, không hiện lại hóa đơn cũ).
+    // → Vẫn giữ income history vì thống kê doanh thu chỉ lọc theo status '3' (không lọc isDeleted),
+    //   nên hóa đơn/xe đã xác nhận vẫn được tính vào biểu đồ doanh thu.
     if (setData.status === false) {
       await this.vehicleModel.updateMany({ roomId: _id }, { isDeleted: true });
+      await this.electricityBillModel.updateMany({ roomId: _id }, { isDeleted: true });
+      await this.waterBillModel.updateMany({ roomId: _id }, { isDeleted: true });
     }
 
     return result;

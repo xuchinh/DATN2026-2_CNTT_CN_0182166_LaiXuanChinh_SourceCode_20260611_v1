@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 
 type FeatureListProps = {
@@ -9,84 +8,66 @@ const FeatureList: React.FC<FeatureListProps> = ({ className }) => {
   const features = [
     {
       id: 1,
-      title: "Quản Lý Phòng Trọ Đa Nền Tảng",
+      icon: "🏠",
+      title: "Quản lý đa nền tảng",
       description:
-        "Quản lý phòng trọ của bạn từ bất kỳ thiết bị nào, bất kể bạn đang ở đâu. Phần mềm của chúng tôi tương thích với máy tính, máy tính bảng và điện thoại di động.",
+        "Theo dõi phòng trọ mọi lúc, mọi nơi — trên máy tính, máy tính bảng hay điện thoại.",
     },
     {
       id: 2,
-      title: "Quản Lý Khách Thuê",
+      icon: "👥",
+      title: "Quản lý khách thuê",
       description:
-        "Theo dõi và quản lý thông tin khách thuê, lịch sử thanh toán và các hợp đồng thuê một cách chi tiết và dễ dàng.",
+        "Thông tin khách, lịch sử thanh toán và hợp đồng — gọn gàng, dễ tra cứu.",
     },
     {
       id: 3,
-      title: "Tự Động Hóa Quy Trình",
+      icon: "⚡",
+      title: "Tự động hóa quy trình",
       description:
-        "Tự động gửi thông báo nhắc nhở thanh toán, thông báo hết hạn hợp đồng, và quản lý các yêu cầu bảo trì từ khách thuê.",
+        "Nhắc thanh toán, cảnh báo hết hạn hợp đồng và tiếp nhận yêu cầu bảo trì.",
     },
     {
       id: 4,
-      title: "Báo Cáo Tài Chính Chi Tiết",
+      icon: "📊",
+      title: "Báo cáo tài chính",
       description:
-        "Cung cấp báo cáo tài chính chi tiết giúp bạn theo dõi doanh thu, chi phí và lợi nhuận một cách minh bạch và chính xác.",
+        "Doanh thu, chi phí và lợi nhuận hiện rõ qua biểu đồ trực quan.",
     },
     {
       id: 5,
-      title: "Bảo Mật Cao",
+      icon: "🔒",
+      title: "Bảo mật dữ liệu",
       description:
-        "Thông tin của bạn được bảo vệ bởi hệ thống bảo mật tiên tiến, đảm bảo an toàn tuyệt đối cho dữ liệu của bạn.",
+        "Mật khẩu mã hóa, phân quyền rõ ràng — dữ liệu của bạn luôn an toàn.",
+    },
+    {
+      id: 6,
+      icon: "🧾",
+      title: "Hóa đơn điện nước",
+      description:
+        "Ghi chỉ số, tính tiền theo tháng cho từng phòng chỉ trong vài giây.",
     },
   ];
 
   return (
-    <div className={`${className}`}>
-      <div className="w-full mt-[80px] lg:pl-[10%] ">
-        <div className="max-w-[485px]">
-          {/* center dots */}
-          <div className="absolute top-[5%] left-[-12%]">
-            <Image
-              src="/images/home-page/dot-center-feture.png"
-              width={167}
-              height={281}
-              alt="dot center"
-              className="object-cover"
-            />
+    <div className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 ${className ?? ""}`}>
+      {features.map((feature) => (
+        <div
+          key={feature.id}
+          className="group rounded-[18px] border border-[#E2EFE8] bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[#A7F3D0] hover:shadow-[0_18px_40px_rgba(5,150,105,0.12)]"
+        >
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#ECFDF5] to-[#D1FAE5] text-2xl">
+            {feature.icon}
           </div>
-          {/* feture content */}
-          <div className="relative">
-            {features.map((feature) => (
-              <div
-                key={feature.id}
-                className="flex items-start mb-12 "
-              >
-                <div className="text-center leading-[50px] text-white font-playfair text-[50px] font-medium w-[60px] h-[60px] bg-[#F97316] rounded-full mr-8">
-                  {feature.id}
-                </div>
-
-                <div>
-                  <h3 className="text-[#F97316] font-playfair text-[25px] font-medium">
-                    {feature.title}
-                  </h3>
-                  <p className="max-w-[322px] text-white font-sans text-base font-normal leading-[24px]">
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* right dots */}
-          <div className="absolute bottom-[9%] right-[2%]">
-            <Image
-              src="/images/home-page/dot-right-feture.png"
-              width={240}
-              height={196}
-              alt="right dots"
-              className="bg-no-repeat object-cover"
-            />
-          </div>
+          <h3 className="mt-5 font-playfair text-xl font-bold text-[#064E3B]">
+            {feature.title}
+          </h3>
+          <p className="mt-2 text-[15px] leading-relaxed text-[#3F5C50]">
+            {feature.description}
+          </p>
         </div>
-      </div>
+      ))}
     </div>
   );
 };

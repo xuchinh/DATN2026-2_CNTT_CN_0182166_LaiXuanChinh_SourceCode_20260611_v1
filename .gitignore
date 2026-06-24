@@ -1,1 +1,10 @@
 .claude/
+
+# Script seed/backfill chạy tay (chứa chuỗi kết nối DB) — không publish
+be_nest/seed-test-users.js
+be_nest/backfill-package-revenue.js
+
+# An toàn: chặn mọi file env ở mọi cấp
+**/.env
+**/.env.*
+!**/.env.example

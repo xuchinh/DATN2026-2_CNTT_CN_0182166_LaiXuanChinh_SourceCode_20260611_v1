@@ -17,6 +17,7 @@ import { Building } from '../buildings/schemas/building.schemas';
 import { WaterBill } from '../water_bills/schemas/water_bill.schemas';
 import { ElectricityBill } from '../electricity_bills/schemas/electricity_bill.schemas';
 import { Vehicle } from '../vehicles/schemas/vehicle.schemas';
+import { Package } from '../packages/schemas/package.schemas';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +34,8 @@ export class UsersService {
     private electricityBillModel: Model<ElectricityBill>,
     @InjectModel(Vehicle.name)
     private vehicleModel: Model<Vehicle>,
+    @InjectModel(Package.name)
+    private packageModel: Model<Package>,
     private readonly mailerService: MailerService,
   ) { }
   //fun check mail exists
@@ -120,12 +123,37 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto) {
-    const { fromDate, totalMonth } = updateUserDto;
+    const { fromDate, totalMonth, recordPackageRevenue, revenueAmount } = updateUserDto;
 
     const updatedData: any = { ...updateUserDto };
+    // Loại bỏ các cờ tạm + _id để không ghi vào DB
+    delete updatedData.recordPackageRevenue;
+    delete updatedData.revenueAmount;
+    delete updatedData._id;
     if (fromDate && totalMonth) {
       updatedData.toDate = moment(fromDate).add(Number(totalMonth), 'months').toDate();
     }
+
+    // Ghi nhận doanh thu gói bất biến vào paymentHistory khi super admin xác nhận thanh toán.
+    // packageId/packageCode lấy từ chính DTO (gói đang mua) → fallback về user hiện tại.
+    if (recordPackageRevenue) {
+      const user = await this.userModel.findById(updateUserDto._id).lean();
+      const packageId = updateUserDto.packageId ?? user?.packageId;
+      const pkg = packageId ? await this.packageModel.findById(packageId).lean() : null;
+      const updateQuery: any = {
+        $set: updatedData,
+        $push: {
+          paymentHistory: {
+            date: new Date(),
+            packageId: packageId ?? null,
+            packageCode: pkg?.code ?? '',
+            amount: Number(revenueAmount ?? 0),
+          },
+        },
+      };
+      return await this.userModel.updateOne({ _id: updateUserDto._id }, updateQuery);
+    }
+
     return await this.userModel.updateOne(
       { _id: updateUserDto._id }, updatedData);
   }

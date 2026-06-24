@@ -196,6 +196,8 @@ export const handleConfirmWaterBill = async (id: string, status: string) => {
         body: { _id: id, status: status, fromDate: newFromDate, toDate: newToDate }
     })
     revalidateTag("list-water-bills")
+    // Xác nhận thanh toán (status '3') → cập nhật biểu đồ doanh thu tòa nhà
+    revalidateTag("list-income-statistics")
     return res;
 }
 
@@ -212,6 +214,8 @@ export const handleConfirmWaterBillNotDate = async (id: string, status: string) 
         body: { _id: id, status: status }
     })
     revalidateTag("list-water-bills")
+    // Xác nhận thanh toán (status '3') → cập nhật biểu đồ doanh thu tòa nhà
+    revalidateTag("list-income-statistics")
     return res;
 }
 

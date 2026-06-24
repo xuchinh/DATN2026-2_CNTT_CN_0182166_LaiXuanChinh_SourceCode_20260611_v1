@@ -16,17 +16,17 @@ const VideoInstructionsSections = () => {
   return (
     <div className="relative">
       <section
-        className=" mb-[38.55px] lg:max-w-[1240px] aspect-[1240/635.5] rounded-[20px] w-full flex items-center justify-center cursor-pointer"
+        className="relative mb-[38.55px] w-full aspect-[1240/635.5] rounded-[20px] overflow-hidden flex items-center justify-center cursor-pointer"
         onClick={handleSectionClick}
       >
         <div className="absolute left-0 top-0 aspect-[1240/635.5] w-full">
           <Image
-            src="/images/banner-image/img-video-banner.png"
+            src="/images/play-video-image/video-banner.jpg"
             alt="banner"
             className="object-cover"
             fill
           />
-        </div>
+        </div> 
         <div
           className="absolute z-[1] aspect-[152/152] lg:w-[152px] md:w-[96px] w-[56px]" /*unclass (hidden) */
         >
@@ -49,7 +49,7 @@ const VideoInstructionsSections = () => {
               className="w-[95%] md:w-[90%] lg:w-[85%] mx-auto aspect-[16/9]"
               src="https://www.youtube.com/embed/-Pg819il8lY?autoplay=1"
               title="YouTube video player"
-              frameBorder="0"
+              style={{ border: 'none' }}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>

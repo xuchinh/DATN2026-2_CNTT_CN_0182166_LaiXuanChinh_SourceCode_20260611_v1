@@ -44,4 +44,10 @@ export class UpdateUserDto {
     bankAccount: string;
     @IsOptional()
     bank: string;
+    // Cờ tạm (không lưu vào DB): khi = true, backend push 1 entry doanh thu vào paymentHistory
+    @IsOptional()
+    recordPackageRevenue?: boolean;
+    // Số tiền ghi nhận cho lần thanh toán này (mua mới = payment, gia hạn = paymentUpdate)
+    @IsOptional()
+    revenueAmount?: number;
 }

@@ -277,6 +277,9 @@ export const handleConfirmUpdateUserPayment = async (id: string) => {
             totalMonthUpdate: null,
             toDateUpdate: null,
             statusPaymentUpdate: false,
+            // Ghi nhận doanh thu gia hạn (chỉ phần tăng thêm) vào paymentHistory
+            recordPackageRevenue: true,
+            revenueAmount: paymentUpdate,
         },
     });
 
@@ -321,15 +324,25 @@ export const handleConfirmPaymenRoomUser = async (id: string, statusPayment: str
 };
 
 // Super admin xác nhận đã nhận thanh toán mua gói → cấp quyền ADMIN cho user quản lý nhà trọ
+// + ghi nhận doanh thu bất biến vào paymentHistory (mua mới / chuyển gói)
 export const handleConfirmUserPayment = async (id: string) => {
     const session = await auth();
+    const resUser = await handleUserLoginId(id);
+    const user = resUser?.data?.results?.[0];
+    const amount = Number(user?.payment ?? 0);
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`,
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${session?.user?.access_token}`,
         },
-        body: { _id: id, statusPayment: true, role: "ADMIN" }
+        body: {
+            _id: id,
+            statusPayment: true,
+            role: "ADMIN",
+            recordPackageRevenue: true,
+            revenueAmount: amount,
+        }
     });
 
     revalidateTag("list-users");

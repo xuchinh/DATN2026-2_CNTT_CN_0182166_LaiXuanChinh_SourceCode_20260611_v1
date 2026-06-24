@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckOutlined, CloseOutlined, DeleteTwoTone, DislikeOutlined, EditTwoTone, FileDoneOutlined, LikeOutlined, SwapOutlined } from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined, DeleteTwoTone, DislikeOutlined, EditTwoTone, FileDoneOutlined, FileSearchOutlined, LikeOutlined, SwapOutlined } from "@ant-design/icons";
 import { Button, Input, Popconfirm, Select, Table, Tooltip } from "antd"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from "react";
@@ -9,6 +9,8 @@ import { handleBuilding, handleConfirmVehicle, handleDeleteVehicle, handleRoom }
 import VehicleUpdate from "./vehicles.update";
 import { Option } from "antd/es/mentions";
 import { handleConfirmVehicleNotDay } from "@/components/users/requests/user.requests";
+import { handleUser } from "@/components/rooms/requests/room.requests";
+import UserSelect from "@/components/rooms/table/room.user.select";
 
 
 
@@ -33,6 +35,10 @@ const VehicleTable = (props: IProps) => {
     const [dataUpdate, setDataUpdate] = useState<any>(null);
     const [buildingOptions, setBuildingOptions] = useState<any[]>([]);
     const [roomOptions, setRoomOptions] = useState<any[]>([]);
+    const [userOptions, setUserOptions] = useState<any[]>([]);
+
+    const [isSelectUsersModalOpen, setIsSelectUsersModalOpen] = useState<boolean>(false);
+    const [dataSelectUser, setDataSelectUser] = useState<any>(null);
 
     const [searchRoom, setSearchRoom] = useState<string | undefined>(undefined);
     const [searchBuilding, setSearchBuilding] = useState<string | undefined>(undefined);
@@ -45,10 +51,12 @@ const VehicleTable = (props: IProps) => {
         const fetchbuildingOptions = async () => {
             const resRoom = await handleRoom()
             const resBuilding = await handleBuilding();
+            const resUser = await handleUser();
             const resultsBuilding = resBuilding?.data?.results ?? [];
             const resultsRoom = resRoom?.data.results ?? [];
             setBuildingOptions(resultsBuilding);
             setRoomOptions(resultsRoom)
+            setUserOptions(resUser?.data?.results ?? [])
         };
         fetchbuildingOptions();
     }, []);
@@ -67,8 +75,10 @@ const VehicleTable = (props: IProps) => {
 
         replace(`${pathname}?${params.toString()}`);
     };
-    const formatCurrency = (value: string | number) =>
-        `${Number(value).toLocaleString('vi-VN')} VNĐ`;
+    const formatCurrency = (value: string | number) => {
+        const num = Number(value);
+        return `${(Number.isFinite(num) ? num : 0).toLocaleString('vi-VN')} VNĐ`;
+    };
     const columns = [
         {
             title: "STT",
@@ -95,6 +105,30 @@ const VehicleTable = (props: IProps) => {
                 const foundBuilding = buildingOptions.find(d => d._id === buildingId)
                 const name = foundBuilding?.name || 'không rõ';
                 return <span>{name}</span>;
+            }
+        },
+        {
+            title: 'Chủ xe',
+            render: (record: any) => {
+                const room = roomOptions.find(f => f._id === record.roomId);
+                const owner = userOptions.find(u => u._id === room?.userId);
+                const name = owner?.name || 'Chưa rõ';
+                return (
+                    <div className="flex items-center">
+                        <span>{name}</span>
+                        {owner && (
+                            <Tooltip title="Xem thông tin chủ xe">
+                                <FileSearchOutlined
+                                    className="cursor-pointer ml-2"
+                                    onClick={() => {
+                                        setDataSelectUser(owner);
+                                        setIsSelectUsersModalOpen(true);
+                                    }}
+                                />
+                            </Tooltip>
+                        )}
+                    </div>
+                );
             }
         },
         {
@@ -326,6 +360,7 @@ const VehicleTable = (props: IProps) => {
                     dataSource={vehicles}
                     columns={columns}
                     rowKey={"_id"}
+                    scroll={{ x: 'max-content' }}
                     pagination={
                         {
                             current: meta.current,
@@ -345,6 +380,13 @@ const VehicleTable = (props: IProps) => {
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
+            />
+
+            <UserSelect
+                isSelectModalOpen={isSelectUsersModalOpen}
+                setIsSelectModalOpen={setIsSelectUsersModalOpen}
+                dataSelect={dataSelectUser}
+                setDataSelect={setDataSelectUser}
             />
         </>
     )

@@ -4,6 +4,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 import '@/app/globals.css';
 import NextAuthWrapper from "@/library/next.auth.wrapper";
+import AntdThemeProvider from "@/library/antd.theme.provider";
 import clsx from "clsx";
 
 export const metadata: Metadata = {
@@ -42,9 +43,11 @@ export default function RootLayout({
         nunito.variable,
       )}>
         <AntdRegistry>
-          <NextAuthWrapper>
-            {children}
-          </NextAuthWrapper>
+          <AntdThemeProvider>
+            <NextAuthWrapper>
+              {children}
+            </NextAuthWrapper>
+          </AntdThemeProvider>
         </AntdRegistry>
 
       </body>

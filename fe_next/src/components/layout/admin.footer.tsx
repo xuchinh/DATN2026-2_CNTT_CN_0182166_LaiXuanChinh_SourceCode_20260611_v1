@@ -6,8 +6,8 @@ const AdminFooter = () => {
 
     return (
         <>
-            <Footer style={{ textAlign: 'center' }}>
-                RoomHub ©{new Date().getFullYear()} Created by Xuân Chinh - laixuanchinh@gmail.com
+            <Footer style={{ textAlign: 'center', background: '#F8FAFC', borderTop: '1px solid #e2e8f0', color: '#64748B' }}>
+                RoomHub ©{new Date().getFullYear()} Created by Xuân Chính - laixuanchinh@gmail.com
             </Footer>
         </>
     )
