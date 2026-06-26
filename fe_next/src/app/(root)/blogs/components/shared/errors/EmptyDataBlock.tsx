@@ -3,7 +3,7 @@ import Image from "next/image";
 const EmptyDataBlock = () => {
   return (
     <div>
-      <h3 className="text-center font-bold text-yellow-400 text-[2.5rem]">
+      <h3 className="text-center font-playfair font-bold text-[#047857] text-[2.5rem]">
         Không tìm thấy dữ liệu
       </h3>
       <div className="mt-2">

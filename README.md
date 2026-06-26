@@ -6,6 +6,9 @@ Hệ thống gồm 2 phần:
 - **`be_nest/`** — Backend API bằng **NestJS** + **MongoDB** (Mongoose).
 - **`fe_next/`** — Frontend bằng **Next.js 14** (React, TypeScript, Tailwind CSS, Ant Design).
 
+** Cấu trúc đồ án được lấy cảm hứng từ khóa học 
+[FULL] Thực Hành FullStack Next.js/Nest.js (Typescript) Dự Án JWT | Tự Học Coding với Hỏi Dân IT có đường link là https://www.youtube.com/watch?v=fthiw89XG4s&list=PLncHg6Kn2JT5009M5nlo_un6wlIHM-0HS
+
 ---
 
 ## 1. Yêu cầu môi trường

@@ -43,24 +43,20 @@ const DetailSection = async ({ blog }: { blog: Blog }) => {
               </p>
 
               {blog.buildingId && (
-                <div className="flex flex-col gap-2">
-                  <p className="text-[18px] text-[#313A5A]">
-                    <span className="font-bold ml-5">Tên nhà: </span><span>{buildingName}</span>
-                  </p>
-                  <p className="text-[18px] text-[#313A5A]">
-                    <span className="font-bold ml-5">Địa chỉ: </span><span>{buildingAddress}</span>
-                  </p>
-                  <p className="text-[18px] text-[#313A5A]">
-                    <span className="font-bold ml-5">Tổng số phòng: </span><span>{totalRooms}</span> phòng
-                  </p>
-                  <p className="text-[18px] text-[#313A5A]">
-                    <span className="font-bold ml-5">Giá trung bình mỗi phòng: </span><span>{priceOfRoom}</span> VND/phòng
-                  </p>
-                  <p className="text-[18px] text-[#313A5A]">
-                    <span className="font-bold ml-5"> Xem chi tiết và thuê phòng </span><span className="hover:text-blue-600 "><Link href={`/accommodation?buildingId=${blog.buildingId}`} className="hover:underline hover:text-blue-600">
-                      ( tại đây )
-                    </Link></span>
-                  </p>
+                <div className="w-full rounded-[14px] border border-[#A7F3D0] bg-[#ECFDF5] p-5">
+                  <p className="mb-3 font-playfair text-[20px] font-bold text-[#064E3B]">Thông tin nhà trọ</p>
+                  <div className="flex flex-col gap-2 text-[16px] text-[#374151]">
+                    <p><span className="font-semibold text-[#047857]">Tên nhà: </span>{buildingName}</p>
+                    <p><span className="font-semibold text-[#047857]">Địa chỉ: </span>{buildingAddress}</p>
+                    <p><span className="font-semibold text-[#047857]">Tổng số phòng: </span>{totalRooms} phòng</p>
+                    <p><span className="font-semibold text-[#047857]">Giá trung bình mỗi phòng: </span>{priceOfRoom} VND/phòng</p>
+                  </div>
+                  <Link
+                    href={`/accommodation?buildingId=${blog.buildingId}`}
+                    className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-gradient-to-r from-[#10B981] to-[#059669] px-5 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)] transition hover:shadow-[0_6px_16px_rgba(5,150,105,0.38)]"
+                  >
+                    Xem chi tiết &amp; thuê phòng
+                  </Link>
                 </div>
               )}
               {(blog.Content || []).map((section: BlogContent, idx: number) => (

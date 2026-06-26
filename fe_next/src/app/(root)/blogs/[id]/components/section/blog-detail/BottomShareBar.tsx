@@ -26,7 +26,7 @@ const BottomShareBar = ({ id, title, dateShare, authorName }: Sharebar) => {
       <div>
         <p className="text-[18px] font-normal leading-[28.8px] text-left">
           Đăng ngày <span>{dateShare}</span>
-          {" bởi "} <span className="text-[#8828FF]">{authorName}</span>
+          {" bởi "} <span className="font-semibold text-[#047857]">{authorName}</span>
         </p>
       </div>
       <div className="flex items-center justify-center ">

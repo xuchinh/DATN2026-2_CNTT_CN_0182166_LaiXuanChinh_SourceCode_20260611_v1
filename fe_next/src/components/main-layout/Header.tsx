@@ -16,6 +16,7 @@ import UserSelect from "../users/table/user.select";
 import UserUpdate from "../users/table/user.update";
 import { label } from "framer-motion/client";
 import UserPaymentSelect from "../users/table/user.payment.select";
+import MyRentalRequests from "../rooms/myRentalRequests";
 const navList = [
   { label: "Home", slug: "/" },
   { label: "Tìm trọ", slug: '/accommodation' },
@@ -38,6 +39,7 @@ const Header = (props: any) => {
   const [dataSelect, setDataSelect] = useState<any>(session?.data?.results?.[0] ?? null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [dataUpdate, setDataUpdate] = useState<any>(null);
+  const [isRequestsModalOpen, setIsRequestsModalOpen] = useState(false);
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => {
@@ -98,6 +100,17 @@ const Header = (props: any) => {
           dataSelect?.role === 'USERS' ? (
             <span onClick={handleUserPaymentClick}>
               Các khoản thanh toán
+            </span>
+          ) : null
+        ),
+    },
+    {
+      key: '1b',
+      label:
+        (
+          dataSelect?.role === 'USERS' ? (
+            <span onClick={() => setIsRequestsModalOpen(true)}>
+              Các yêu cầu đã gửi
             </span>
           ) : null
         ),
@@ -324,6 +337,11 @@ const Header = (props: any) => {
         setIsUpdateModalOpen={setIsUpdateModalOpen}
         dataUpdate={dataUpdate}
         setDataUpdate={setDataUpdate}
+      />
+      <MyRentalRequests
+        isOpen={isRequestsModalOpen}
+        onClose={() => setIsRequestsModalOpen(false)}
+        userId={session?.data?.results?.[0]?._id}
       />
     </header>
   );

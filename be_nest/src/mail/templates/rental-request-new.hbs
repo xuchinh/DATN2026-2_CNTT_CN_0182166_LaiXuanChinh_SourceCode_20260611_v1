@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Yêu cầu thuê phòng mới - RoomHub</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body
+    style="margin: 0; padding: 0; min-width: 100%; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; background-color: #FAFAFA; color: #222222;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #059669; padding: 24px; color: #ffffff;">
+            <h1
+                style="font-size: 22px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 0; text-align: center;">
+                Bạn có yêu cầu thuê phòng mới</h1>
+        </div>
+        <div style="padding: 24px; background-color: #ffffff;">
+            <p style="margin-top: 0; margin-bottom: 16px;">Xin chào {{landlordName}},</p>
+            <p style="margin-top: 0; margin-bottom: 16px;">
+                Có khách vừa gửi yêu cầu thuê phòng <b>{{roomCode}}</b>
+                {{#if buildingName}}thuộc nhà trọ <b>{{buildingName}}</b>{{/if}} của bạn.
+            </p>
+            <div style="border: 1px solid #D1FAE5; background-color: #ECFDF5; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                <p style="margin: 0 0 8px;"><b>Khách:</b> {{requesterName}}</p>
+                <p style="margin: 0 0 8px;"><b>Điện thoại:</b> {{requesterPhone}}</p>
+                <p style="margin: 0 0 8px;"><b>Email:</b> {{requesterEmail}}</p>
+                <p style="margin: 0 0 8px;"><b>Số tháng dự kiến:</b> {{desiredMonths}}</p>
+                <p style="margin: 0;"><b>Lời nhắn:</b> {{message}}</p>
+            </div>
+            <p style="margin-top: 0; margin-bottom: 16px;">
+                Vui lòng đăng nhập vào trang quản lý phòng để liên hệ với khách và quyết định
+                duyệt / từ chối yêu cầu này.
+            </p>
+        </div>
+        <div style="background-color: #f6f6f6; padding: 24px;">
+            <p style="margin-top: 0; margin-bottom: 0;">
+                Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi
+                qua <a href="https://mail.google.com/mail/?view=cm&to=laixuanchinh@gmail.com" target="_blank"
+                    style="color: #059669; text-decoration:none;">laixuanchinh@gmail.com</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

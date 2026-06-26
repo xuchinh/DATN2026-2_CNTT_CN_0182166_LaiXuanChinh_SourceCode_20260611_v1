@@ -7,13 +7,14 @@ import {
     handleAllRoom
 } from "../../../requests/accommodation.request";
 import ModalAccommodation from "../../shared/modalAccommodation";
-import { handleUpdateRoom } from "@/components/rooms/requests/room.requests";
-import { handleUpdateUserAction, handleUserById } from "@/components/users/requests/user.requests";
+import RoomGallery from "../../shared/roomGallery";
+import { handleCreateRentalRequest } from "@/components/rooms/requests/room.requests";
+import { handleUserById } from "@/components/users/requests/user.requests";
 import { handleBlogsByBuilding } from "@/app/(root)/blogs/requests/blog.request";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { handleElectricityBillByRoomID, handleUpdateElectricityBill } from "@/components/electricity_bills/requests/electricityBill.requests";
-import { handleElWaterBillByRoomID, handleUpdateWaterBill } from "@/components/water_bills/requests/waterBill.requests";
+import { handleElectricityBillByRoomID } from "@/components/electricity_bills/requests/electricityBill.requests";
+import { handleElWaterBillByRoomID } from "@/components/water_bills/requests/waterBill.requests";
 import { CloseOutlined, EnvironmentOutlined, MailOutlined, PhoneOutlined, ReadOutlined, UserOutlined, BankOutlined } from "@ant-design/icons";
 import { Select } from "antd";
 
@@ -46,6 +47,8 @@ const AccommodationSearch = (props: any) => {
     const buildingIdFromQuery = searchParams.get("buildingId");
     const [waterBills, setWaterBills] = useState<any>(null);
     const [electricityBills, setElectricityBills] = useState<any>(null);
+    const [requestMessage, setRequestMessage] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         const loadAllBuildings = async () => {
@@ -165,58 +168,63 @@ const AccommodationSearch = (props: any) => {
 
     const handleContact = () => {
         if (!session) { showLoginModal(); return; }
+        // Chỉ người thuê (role USERS) mới được gửi yêu cầu. Chủ trọ/quản trị viên bị chặn.
+        const role = session?.data?.results?.[0]?.role;
+        if (role && role !== "USERS") {
+            setModalConfig({
+                type: "error",
+                title: "Không thể gửi yêu cầu",
+                message: "Tài khoản chủ trọ/quản trị viên không thể gửi yêu cầu thuê nhà.",
+                onConfirm: undefined,
+                loginRequired: false,
+            });
+            setModalOpen(true);
+            return;
+        }
+        setRequestMessage("");
         setContactOpen(true);
     };
 
-    const handleRent = async () => {
+    // Gửi yêu cầu thuê nhà (không gán phòng) → vào dashboard chủ trọ chờ duyệt.
+    // Khách đã đăng nhập đều gửi được, không bị chặn; quyết định cuối thuộc về chủ trọ.
+    const handleSendRentalRequest = async () => {
         if (!session) { showLoginModal(); return; }
+        if (!selectedRoom?._id) return;
+        setSubmitting(true);
         try {
             const userId = session?.data?.results?.[0]._id;
-            const res = await handleAllRoom(undefined, userId);
-            const activeRentedRooms = (res?.data?.results || []).filter((r: TypeRoomProp) => {
-                if (!r.toDate) return true;
-                return new Date(r.toDate) > new Date();
+            const res = await handleCreateRentalRequest({
+                roomId: selectedRoom._id,
+                userId,
+                message: requestMessage.trim(),
+                desiredFromDate: newDate,
+                desiredMonths: months,
             });
-            if (activeRentedRooms.length > 0) {
-                const room = activeRentedRooms[0];
-                const toDateStr = room.toDate ? new Date(room.toDate).toLocaleDateString("vi-VN") : "chưa xác định";
-                setModalConfig({ type: "error", title: "Bạn đã có phòng đang thuê", message: `Bạn đang thuê phòng ${room.code} đến ngày ${toDateStr}. Vui lòng chấm dứt hợp đồng trước khi thuê phòng mới.`, onConfirm: undefined, loginRequired: false });
-                setModalOpen(true);
-                return;
+            setContactOpen(false);
+            if (res?.statusCode === 200 || res?.statusCode === 201) {
+                setModalConfig({
+                    type: "success",
+                    title: "Đã gửi yêu cầu thuê",
+                    message: `Yêu cầu thuê phòng ${selectedRoom?.code} đã được gửi tới chủ trọ. Chủ trọ sẽ liên hệ và phản hồi sớm.`,
+                    onConfirm: undefined,
+                    loginRequired: false,
+                });
+            } else {
+                setModalConfig({
+                    type: "error",
+                    title: "Không gửi được yêu cầu",
+                    message: res?.message || "Không thể gửi yêu cầu thuê, vui lòng thử lại.",
+                    onConfirm: undefined,
+                    loginRequired: false,
+                });
             }
-            setModalConfig({
-                type: "confirm",
-                title: "Xác nhận thuê phòng",
-                message: `Bạn có chắc muốn thuê phòng "${selectedRoom?.code}" nhà "${selectedBuilding?.name}" trong "${months}" tháng?`,
-                loginRequired: false,
-                onConfirm: async () => {
-                    try {
-                        const updateData = { _id: selectedRoom?._id, totalMonth: months, userId: session?.data?.results?.[0]._id, statusPayment: '2', fromDate: newDate };
-                        const updateUser = { _id: session?.data?.results?.[0]._id, role: "USERS" };
-                        const updateWaterBill = { _id: waterBills?._id, toDate: newDate, amount: '0', status: '1', payment: '0' };
-                        const electricityBill = { _id: electricityBills?._id, toDate: newDate, amount: '0', status: '1', payment: '0' };
-                        const res = await handleUpdateRoom(updateData);
-                        if (res?.statusCode === 200) {
-                            await handleUpdateUserAction(updateUser);
-                            if (waterBills?._id) await handleUpdateWaterBill(updateWaterBill);
-                            if (electricityBills?._id) await handleUpdateElectricityBill(electricityBill);
-                            window.location.reload();
-                            setModalConfig({ type: "success", title: "Thuê phòng thành công", message: `Bạn đã thuê phòng ${selectedRoom?.code} thành công!`, onConfirm: undefined, loginRequired: false });
-                            setModalOpen(true);
-                        } else {
-                            setModalConfig({ type: "error", title: "Lỗi khi thuê phòng", message: res?.message || "Không thể thuê phòng, vui lòng thử lại.", onConfirm: undefined, loginRequired: false });
-                            setModalOpen(true);
-                        }
-                    } catch {
-                        setModalConfig({ type: "error", title: "Lỗi khi thuê phòng", message: "Có lỗi xảy ra trong quá trình thuê phòng.", onConfirm: undefined, loginRequired: false });
-                        setModalOpen(true);
-                    }
-                }
-            });
             setModalOpen(true);
         } catch {
-            setModalConfig({ type: "error", title: "Lỗi hệ thống", message: "Không kiểm tra được thông tin thuê phòng.", onConfirm: undefined, loginRequired: false });
+            setContactOpen(false);
+            setModalConfig({ type: "error", title: "Lỗi hệ thống", message: "Có lỗi xảy ra khi gửi yêu cầu thuê.", onConfirm: undefined, loginRequired: false });
             setModalOpen(true);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -285,17 +293,17 @@ const AccommodationSearch = (props: any) => {
                 </div>
 
                 {/* ── Detail panel ── */}
-                <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-1 overflow-y-auto">
                     {selectedBuilding ? (
-                        <div className="flex w-full">
+                        <div className="flex w-full flex-col">
                             {/* Building info */}
-                            <div className="flex w-1/2 flex-col border-r border-[#E5E7EB]">
+                            <div className="flex w-full flex-col border-b border-[#E5E7EB]">
                                 <div className="bg-gradient-to-r from-[#047857] to-[#059669] px-6 py-5">
                                     <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#A7F3D0]">Thông tin nhà trọ</p>
                                     <h2 className="font-playfair text-[20px] font-bold leading-tight text-white">{selectedBuilding.name}</h2>
                                 </div>
 
-                                <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-5">
+                                <div className="flex flex-col gap-4 px-5 py-5">
                                     <div className="flex items-start gap-2 text-[14px] text-[#374151]">
                                         <EnvironmentOutlined className="mt-0.5 text-[#059669]" />
                                         <span>{selectedBuilding.address}</span>
@@ -335,7 +343,7 @@ const AccommodationSearch = (props: any) => {
                             </div>
 
                             {/* Room info */}
-                            <div className="flex w-1/2 flex-col">
+                            <div className="flex w-full flex-col">
                                 <div className="border-b border-[#E5E7EB] px-5 py-4">
                                     <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-gray-400">Chọn phòng</p>
                                     {(rooms.length > 0 && +selectedBuilding.numberOfRoomsRented <= +selectedBuilding.totalRooms) ? (
@@ -359,7 +367,8 @@ const AccommodationSearch = (props: any) => {
                                 </div>
 
                                 {selectedRoom ? (
-                                    <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-5">
+                                    <div className="flex flex-col gap-4 px-5 py-5">
+                                        <RoomGallery images={selectedRoom.images} />
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="rounded-[10px] bg-[#ECFDF5] px-3 py-2.5">
                                                 <p className="mb-0.5 text-[11px] text-gray-500">Giá phòng</p>
@@ -404,21 +413,13 @@ const AccommodationSearch = (props: any) => {
                                             </p>
                                         </div>
 
-                                        {/* Action buttons */}
-                                        <div className="flex gap-3">
-                                            <button
-                                                onClick={handleContact}
-                                                className="flex-1 rounded-[12px] border-2 border-[#059669] py-3 font-semibold text-[#059669] transition-all hover:bg-[#ECFDF5]"
-                                            >
-                                                Liên hệ
-                                            </button>
-                                            <button
-                                                onClick={handleRent}
-                                                className="flex-[2] rounded-[12px] bg-gradient-to-r from-[#10B981] to-[#059669] py-3 font-semibold text-white shadow-[0_4px_14px_rgba(5,150,105,0.28)] transition-all hover:scale-[1.01] hover:shadow-[0_6px_20px_rgba(5,150,105,0.38)]"
-                                            >
-                                                Thuê ngay
-                                            </button>
-                                        </div>
+                                        {/* Action button */}
+                                        <button
+                                            onClick={handleContact}
+                                            className="w-full rounded-[12px] bg-gradient-to-r from-[#10B981] to-[#059669] py-3 font-semibold text-white shadow-[0_4px_14px_rgba(5,150,105,0.28)] transition-all hover:scale-[1.01] hover:shadow-[0_6px_20px_rgba(5,150,105,0.38)]"
+                                        >
+                                            Liên hệ thuê nhà
+                                        </button>
                                     </div>
                                 ) : (
                                     rooms.length > 0 && (
@@ -447,7 +448,7 @@ const AccommodationSearch = (props: any) => {
                         {/* Header */}
                         <div className="flex items-center justify-between bg-gradient-to-r from-[#047857] to-[#059669] px-6 py-4">
                             <div>
-                                <p className="text-[11px] font-bold uppercase tracking-widest text-[#A7F3D0]">Thông tin liên hệ</p>
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-[#A7F3D0]">Liên hệ thuê nhà</p>
                                 <h3 className="font-playfair text-[18px] font-bold text-white">{selectedBuilding?.name}</h3>
                             </div>
                             <button
@@ -482,12 +483,34 @@ const AccommodationSearch = (props: any) => {
                             ))}
                         </div>
 
-                        <div className="border-t border-[#E5E7EB] px-6 py-4">
+                        {/* Form gửi yêu cầu thuê */}
+                        <div className="border-t border-[#E5E7EB] px-6 pt-4">
+                            <div className="mb-3 rounded-[10px] bg-[#ECFDF5] px-3 py-2 text-[13px] text-[#047857]">
+                                Phòng <b>{selectedRoom?.code}</b> · Số tháng muốn thuê: <b>{months}</b>
+                            </div>
+                            <label className="mb-1 block text-[12px] font-semibold text-gray-500">Lời nhắn cho chủ trọ (tùy chọn)</label>
+                            <textarea
+                                value={requestMessage}
+                                onChange={(e) => setRequestMessage(e.target.value)}
+                                rows={3}
+                                placeholder="VD: Tôi muốn xem phòng vào cuối tuần, có thể dọn vào đầu tháng sau..."
+                                className="w-full resize-none rounded-[10px] border border-[#E5E7EB] px-3 py-2 text-[14px] transition focus:border-[#059669] focus:outline-none focus:ring-2 focus:ring-[#059669]/15"
+                            />
+                        </div>
+
+                        <div className="flex gap-3 px-6 py-4">
                             <button
                                 onClick={() => setContactOpen(false)}
-                                className="w-full rounded-[12px] border border-[#E5E7EB] py-2.5 text-[14px] font-medium text-gray-600 transition hover:bg-gray-50"
+                                className="flex-1 rounded-[12px] border border-[#E5E7EB] py-2.5 text-[14px] font-medium text-gray-600 transition hover:bg-gray-50"
                             >
                                 Đóng
+                            </button>
+                            <button
+                                onClick={handleSendRentalRequest}
+                                disabled={submitting}
+                                className="flex-[2] rounded-[12px] bg-gradient-to-r from-[#10B981] to-[#059669] py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)] transition hover:shadow-[0_6px_16px_rgba(5,150,105,0.38)] disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {submitting ? "Đang gửi..." : "Gửi yêu cầu thuê"}
                             </button>
                         </div>
                     </div>

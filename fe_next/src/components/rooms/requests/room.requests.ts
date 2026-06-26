@@ -115,6 +115,95 @@ export const handleUpdateRoom = async (data: any) => {
     revalidateTag("list-rooms");
     return res;
 };
+// Khách gửi yêu cầu thuê nhà (KHÔNG gán phòng) → vào dashboard chủ trọ chờ duyệt.
+export const handleCreateRentalRequest = async (data: {
+    roomId: string;
+    userId: string;
+    message?: string;
+    desiredFromDate?: Date;
+    desiredMonths?: string | number;
+}) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms/rental-requests`,
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { ...data },
+    });
+    revalidateTag("list-rental-requests");
+    revalidateTag("list-rooms");
+    return res;
+};
+
+// Khách tự xóa (hủy) yêu cầu thuê của mình ở 1 phòng.
+export const handleCancelRentalRequest = async (data: { roomId: string; userId: string }) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms/rental-requests/cancel`,
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { ...data },
+    });
+    revalidateTag("list-rental-requests");
+    revalidateTag("list-rooms");
+    return res;
+};
+
+// Khách xem trạng thái các yêu cầu thuê của mình.
+export const handleMyRentalRequests = async (userId: string) => {
+    const session = await auth();
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms/my-rental-requests`,
+        method: "GET",
+        queryParams: { userId },
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+    });
+};
+
+// Chủ trọ: lấy danh sách yêu cầu thuê đang chờ trong tất cả nhà trọ của mình.
+export const handleGetRentalRequests = async () => {
+    const session = await auth();
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms/rental-requests`,
+        method: "GET",
+        queryParams: { landlordId: session?.user?._id },
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        nextOption: {
+            next: { tags: ["list-rental-requests"] },
+        },
+    });
+};
+
+// Chủ trọ: duyệt (accept) / từ chối (reject) 1 yêu cầu thuê.
+export const handleDecideRentalRequest = async (data: {
+    roomId: string;
+    requestUserId: string;
+    decision: 'accept' | 'reject';
+    totalMonth?: string;
+    fromDate?: Date;
+}) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms/rental-requests/decide`,
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { ...data },
+    });
+    revalidateTag("list-rental-requests");
+    revalidateTag("list-rooms");
+    return res;
+};
+
 export const handleConfirmRoom = async (id: string, status: boolean, buildingId: string) => {
     const session = await auth();
 

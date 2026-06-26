@@ -204,7 +204,7 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
     ];
 
     const waterBillColumns = [
-        { title: 'Số nươc', dataIndex: 'amount', key: 'amount' },
+        { title: 'Số nước', dataIndex: 'amount', key: 'amount' },
         { title: 'Giá nước', dataIndex: 'waterPrice', key: 'waterPrice', render: formatCurrency },
         { title: 'Từ ngày', dataIndex: 'fromDate', key: 'fromDate', render: dateFormat },
         { title: 'Đến ngày', dataIndex: 'toDate', key: 'toDate', render: dateFormat },
@@ -243,7 +243,7 @@ const UserPaymentSelect = ({ isSelectModalOpen, setIsSelectModalOpen, dataSelect
 
     // Columns cho Electricity Bill
     const electricityBillColumns = [
-        { title: 'Số nước', dataIndex: 'amount', key: 'amount' },
+        { title: 'Số điện', dataIndex: 'amount', key: 'amount' },
         { title: 'Giá điện', dataIndex: 'eletricPrice', key: 'eletricPrice', render: formatCurrency },
         { title: 'Từ ngày', dataIndex: 'fromDate', key: 'fromDate', render: dateFormat },
         { title: 'Đến ngày', dataIndex: 'toDate', key: 'toDate', render: dateFormat },

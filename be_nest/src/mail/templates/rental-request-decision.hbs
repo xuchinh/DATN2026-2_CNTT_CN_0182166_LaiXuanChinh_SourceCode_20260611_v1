@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kết quả yêu cầu thuê phòng - RoomHub</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body
+    style="margin: 0; padding: 0; min-width: 100%; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; background-color: #FAFAFA; color: #222222;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div style="background-color: {{#if accepted}}#059669{{else}}#6B7280{{/if}}; padding: 24px; color: #ffffff;">
+            <h1
+                style="font-size: 22px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 0; text-align: center;">
+                {{#if accepted}}Yêu cầu thuê phòng đã được chấp nhận{{else}}Cập nhật yêu cầu thuê phòng{{/if}}</h1>
+        </div>
+        <div style="padding: 24px; background-color: #ffffff;">
+            <p style="margin-top: 0; margin-bottom: 16px;">Xin chào {{requesterName}},</p>
+            {{#if accepted}}
+            <p style="margin-top: 0; margin-bottom: 16px;">
+                Chúc mừng! Chủ trọ đã <b style="color:#059669;">chấp nhận</b> yêu cầu thuê phòng
+                <b>{{roomCode}}</b>{{#if buildingName}} thuộc nhà trọ <b>{{buildingName}}</b>{{/if}}.
+            </p>
+            <p style="margin-top: 0; margin-bottom: 16px;">
+                Vui lòng liên hệ lại với chủ trọ để hoàn tất thủ tục nhận phòng và thanh toán tiền cọc.
+            </p>
+            {{else}}
+            <p style="margin-top: 0; margin-bottom: 16px;">
+                Rất tiếc, yêu cầu thuê phòng <b>{{roomCode}}</b>{{#if buildingName}} thuộc nhà trọ
+                <b>{{buildingName}}</b>{{/if}} của bạn <b>chưa được chấp nhận</b> lần này.
+            </p>
+            <p style="margin-top: 0; margin-bottom: 16px;">
+                Bạn có thể tiếp tục tìm và gửi yêu cầu thuê các phòng khác trên RoomHub.
+            </p>
+            {{/if}}
+        </div>
+        <div style="background-color: #f6f6f6; padding: 24px;">
+            <p style="margin-top: 0; margin-bottom: 0;">
+                Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi
+                qua <a href="https://mail.google.com/mail/?view=cm&to=laixuanchinh@gmail.com" target="_blank"
+                    style="color: #059669; text-decoration:none;">laixuanchinh@gmail.com</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

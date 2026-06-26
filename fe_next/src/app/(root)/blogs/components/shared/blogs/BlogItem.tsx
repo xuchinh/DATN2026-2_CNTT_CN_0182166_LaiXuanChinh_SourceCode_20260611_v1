@@ -12,7 +12,7 @@ type BlogItemProp = {
 
 const BlogItem = ({ blogs }: BlogItemProp) => {
   return (
-    <li className="group flex w-full flex-col rounded-[14px] border-[2px] border-[#E5E7EB] bg-white p-4 transition-all duration-300 hover:border-[#EEB537] hover:shadow-[0px_10px_40px_0px_rgba(0,0,0,0.10)]">
+    <li className="group flex w-full flex-col rounded-[14px] border-[2px] border-[#E5E7EB] bg-white p-4 transition-all duration-300 hover:border-[#A7F3D0] hover:shadow-[0_8px_18px_rgba(16,24,40,0.08),0_20px_40px_rgba(5,150,105,0.12)]">
       <Link href={`/blogs/${blogs._id}`} className="block w-full">
         {/* Ảnh thumbnail co giãn theo thẻ */}
         <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[8px]">
@@ -30,14 +30,14 @@ const BlogItem = ({ blogs }: BlogItemProp) => {
             <SVGNotebook />
             {"5 Phút đọc"}
           </p>
-          <p className="mb-2 line-clamp-2 text-[17px] font-semibold leading-6 text-description">
+          <p className="mb-2 line-clamp-2 text-[17px] font-semibold leading-6 text-[#111827] transition-colors duration-300 group-hover:text-[#047857]">
             {blogs.title?.length > 133 ? blogs.title.slice(0, 133) + "..." : blogs.title}
           </p>
           <p className="mb-4 line-clamp-3 text-[14px] font-normal leading-5 text-description">
             {blogs.introduce}
           </p>
-          <div className="flex h-[44px] w-[136px] items-center justify-center rounded-lg border-[2px] border-[#9199A6] transition-colors duration-300 group-hover:border-[#EEB537] group-hover:text-[#EEB537]">
-            <p className="flex items-center font-sora text-[14px] font-semibold">
+          <div className="flex h-[44px] w-[136px] items-center justify-center rounded-lg border-[2px] border-[#059669] text-[#059669] transition-colors duration-300 group-hover:bg-[#059669] group-hover:text-white">
+            <p className="flex items-center text-[14px] font-semibold">
               {"Đọc thêm"} <SVGArrowRight className="ml-2" />
             </p>
           </div>

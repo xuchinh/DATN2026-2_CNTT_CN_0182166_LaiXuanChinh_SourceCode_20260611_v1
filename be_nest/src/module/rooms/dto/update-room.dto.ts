@@ -41,6 +41,8 @@ export class UpdateRoomDto {
     statusPayment: string;
     @IsOptional()
     payment: string;
+    @IsOptional()
+    images?: string[];
     // [Câu 8] Landlord thủ công xác nhận hết hạn → bỏ qua guard race condition
     @IsOptional()
     @IsBoolean()

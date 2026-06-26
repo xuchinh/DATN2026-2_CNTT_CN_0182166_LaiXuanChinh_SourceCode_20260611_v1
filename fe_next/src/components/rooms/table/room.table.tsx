@@ -1,11 +1,11 @@
 'use client'
 
 import React from "react";
-import { CheckOutlined, CloseOutlined, DeleteTwoTone, DislikeOutlined, EditTwoTone, FileDoneOutlined, FileSearchOutlined, LikeOutlined, SwapOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Input, Modal, Popconfirm, Select, Table, Tooltip } from "antd"
+import { BellOutlined, CheckOutlined, ClockCircleOutlined, CloseOutlined, DeleteTwoTone, DislikeOutlined, EditTwoTone, FileDoneOutlined, FileSearchOutlined, LikeOutlined, MailOutlined, PhoneOutlined, SwapOutlined, UserOutlined } from "@ant-design/icons";
+import { Badge, Button, Drawer, Dropdown, Empty, Input, Modal, Popconfirm, Select, Table, Tooltip, message } from "antd"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from "react";
-import { handleBuilding, handleConfirmPaymen, handleConfirmPaymenNoupdateIncome, handleConfirmRoom, handleDeleteRoom, handleUpdateRoom, handleUser } from "../requests/room.requests";
+import { handleBuilding, handleConfirmPaymen, handleConfirmPaymenNoupdateIncome, handleConfirmRoom, handleDecideRentalRequest, handleDeleteRoom, handleGetRentalRequests, handleUpdateRoom, handleUser } from "../requests/room.requests";
 import RoomCreate from "./room.create";
 import RoomUpdate from "./room.update";
 import dayjs from "dayjs";
@@ -31,7 +31,7 @@ const RoomTable = (props: IProps) => {
     const { rooms, meta } = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { replace } = useRouter();
+    const { replace, refresh } = useRouter();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
@@ -49,6 +49,51 @@ const RoomTable = (props: IProps) => {
 
     const [isSelectUsersModalOpen, setIsSelectUsersModalOpen] = useState<boolean>(false);
     const [dataSelectUser, setDataSelectUser] = useState<any>(null);
+
+    // Yêu cầu thuê nhà (rental requests) — chủ trọ xem & duyệt/từ chối.
+    const [isRequestsOpen, setIsRequestsOpen] = useState<boolean>(false);
+    const [rentalRequests, setRentalRequests] = useState<any[]>([]);
+    const [requestsLoading, setRequestsLoading] = useState<boolean>(false);
+    const [decidingKey, setDecidingKey] = useState<string | null>(null);
+
+    const fetchRentalRequests = async () => {
+        setRequestsLoading(true);
+        try {
+            const res = await handleGetRentalRequests();
+            setRentalRequests(res?.data?.results ?? []);
+        } catch {
+            setRentalRequests([]);
+        }
+        setRequestsLoading(false);
+    };
+
+    const onDecide = async (req: any, decision: 'accept' | 'reject') => {
+        const key = `${req.roomId}-${req.userId}`;
+        setDecidingKey(key);
+        try {
+            const res = await handleDecideRentalRequest({
+                roomId: req.roomId,
+                requestUserId: req.userId,
+                decision,
+            });
+            if (res?.statusCode === 200 || res?.statusCode === 201) {
+                // Khi DUYỆT: tự động xác nhận "Đang thuê" luôn (status=true) — tái dùng
+                // pipeline có sẵn: tạo hóa đơn điện/nước, gắn xe, cập nhật doanh thu.
+                if (decision === 'accept') {
+                    await handleConfirmRoom(req.roomId, true, req.buildingId);
+                }
+                message.success(decision === 'accept' ? 'Đã duyệt & xác nhận đang thuê' : 'Đã từ chối yêu cầu');
+                await fetchRentalRequests();
+                refresh(); // cập nhật lại bảng phòng (server component)
+            } else {
+                message.error(res?.message || 'Không thực hiện được, vui lòng thử lại.');
+            }
+        } catch {
+            message.error('Có lỗi xảy ra.');
+        } finally {
+            setDecidingKey(null);
+        }
+    };
     const formatCurrency = (value: string | number) => {
         const parsed = Math.round(Number(value));
         const num = Number.isFinite(parsed) ? parsed : 0;
@@ -65,6 +110,7 @@ const RoomTable = (props: IProps) => {
             setUserOptions(resultsUser)
         };
         fetchbuildingOptions();
+        fetchRentalRequests();
 
         const checkAndUpdateExpiredRooms = async () => {
             const today = dayjs(); // Ngày hiện tại
@@ -366,14 +412,14 @@ const RoomTable = (props: IProps) => {
     return (
         <>
             <div
-                className="flex justify-between items-center mb-5"
+                className="flex flex-col gap-3 mb-5"
             >
                 <span>Danh sách phòng</span>
                 <div className="flex gap-4 mb-5">
                     <Select
                         allowClear
                         placeholder="Trạng thái phòng"
-                        style={{ width: 200 }}
+                        style={{ width: 170 }}
                         value={searchStatus}
                         onChange={(value) => {
                             setSearchStatus(value);
@@ -401,7 +447,7 @@ const RoomTable = (props: IProps) => {
                     <Select
                         allowClear
                         placeholder="Chọn nhà"
-                        style={{ width: 200 }}
+                        style={{ width: 120 }}
                         value={searchBuilding}
                         onChange={(value) => {
                             setSearchBuilding(value);
@@ -425,6 +471,14 @@ const RoomTable = (props: IProps) => {
                             updateParams({ search: e.target.value });
                         }}
                     />
+                    <Badge count={rentalRequests.length} size="small">
+                        <Button
+                            icon={<BellOutlined />}
+                            onClick={() => { setIsRequestsOpen(true); fetchRentalRequests(); }}
+                        >
+                            Yêu cầu thuê
+                        </Button>
+                    </Badge>
                     <Button onClick={() => setIsCreateModalOpen(true)}>Thêm phòng</Button>
                 </div>
 
@@ -474,6 +528,76 @@ const RoomTable = (props: IProps) => {
                 dataSelect={dataSelectUser} // Truyền dữ liệu người thuê vào
                 setDataSelect={setDataSelectUser}
             />
+
+            <Drawer
+                title={`Yêu cầu thuê nhà (${rentalRequests.length})`}
+                placement="right"
+                width={440}
+                open={isRequestsOpen}
+                onClose={() => setIsRequestsOpen(false)}
+            >
+                {requestsLoading ? (
+                    <p className="text-gray-400">Đang tải...</p>
+                ) : rentalRequests.length === 0 ? (
+                    <Empty description="Chưa có yêu cầu thuê nào" />
+                ) : (
+                    <div className="flex flex-col gap-3">
+                        {rentalRequests.map((req) => {
+                            const key = `${req.roomId}-${req.userId}`;
+                            const deciding = decidingKey === key;
+                            return (
+                                <div key={key} className="rounded-lg border border-gray-200 p-3 shadow-sm">
+                                    <div className="mb-1 flex items-center justify-between">
+                                        <span className="font-semibold text-emerald-700">Phòng {req.roomCode}</span>
+                                        <span className="text-xs text-gray-400">
+                                            {req.createdAt ? dayjs(req.createdAt).format('DD/MM/YYYY HH:mm') : ''}
+                                        </span>
+                                    </div>
+                                    <div className="mb-2 text-xs text-gray-500">{req.buildingName}</div>
+                                    <div className="flex items-center gap-2 text-sm text-gray-700"><UserOutlined /> {req.requesterName}</div>
+                                    {req.requesterPhone && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-700">
+                                            <PhoneOutlined /> <a href={`tel:${req.requesterPhone}`} className="text-emerald-600">{req.requesterPhone}</a>
+                                        </div>
+                                    )}
+                                    {req.requesterEmail && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-700">
+                                            <MailOutlined /> <a href={`mailto:${req.requesterEmail}`} className="text-emerald-600">{req.requesterEmail}</a>
+                                        </div>
+                                    )}
+                                    <div className="mt-1 flex items-center gap-2 text-sm text-gray-700">
+                                        <ClockCircleOutlined /> Số tháng muốn thuê: <b>{req.desiredMonths || '—'}</b>
+                                    </div>
+                                    {req.message && (
+                                        <div className="mt-2 rounded bg-gray-50 px-2 py-1 text-sm italic text-gray-600">“{req.message}”</div>
+                                    )}
+                                    <div className="mt-3 flex gap-2">
+                                        <Popconfirm
+                                            placement="topRight"
+                                            title="Duyệt yêu cầu này?"
+                                            description="Phòng được gán cho khách này & tự động xác nhận đang thuê (sinh hóa đơn điện/nước). Các yêu cầu khác sẽ bị từ chối."
+                                            okText="Duyệt"
+                                            cancelText="Hủy"
+                                            onConfirm={() => onDecide(req, 'accept')}
+                                        >
+                                            <Button type="primary" size="small" loading={deciding}>Duyệt</Button>
+                                        </Popconfirm>
+                                        <Popconfirm
+                                            placement="topRight"
+                                            title="Từ chối yêu cầu này?"
+                                            okText="Từ chối"
+                                            cancelText="Hủy"
+                                            onConfirm={() => onDecide(req, 'reject')}
+                                        >
+                                            <Button danger size="small" loading={deciding}>Từ chối</Button>
+                                        </Popconfirm>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </Drawer>
         </>
     )
 }

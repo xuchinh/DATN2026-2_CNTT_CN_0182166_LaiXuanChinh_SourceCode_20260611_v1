@@ -3,6 +3,7 @@
 import { Layout, Menu } from "antd";
 import { AppstoreOutlined, MinusSquareOutlined, TeamOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { AdminContext } from "@/library/admin.context";
 import { fetchFeatures } from "../faetures/requests/feature.requests";
@@ -36,6 +37,14 @@ export default function AdminSideBar() {
     const { collapseMenu } = useContext(AdminContext)!;
     const [menuItems, setMenuItems] = useState<any[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(true);
+
+    // Highlight đúng thẻ theo URL hiện tại (giữ nguyên khi F5).
+    // /dashboard          -> 'dashboard' (Thống kê doanh thu)
+    // /dashboard/<path>   -> '<path>' (khớp key = f.path của feature)
+    // /dashboard/blog     -> 'blog 1' (key của mục "Quản lý bài viết")
+    const pathname = usePathname();
+    const segment = pathname?.split('/')[2];
+    const selectedKey = !segment ? 'dashboard' : segment === 'blog' ? 'blog 1' : segment;
 
     useEffect(() => {
         const load = async () => {
@@ -101,7 +110,7 @@ export default function AdminSideBar() {
                 className="border-r-0 pt-1"
                 style={{ background: "transparent" }}
                 mode="inline"
-                defaultSelectedKeys={['dashboard']}
+                selectedKeys={[selectedKey]}
                 items={[
                     {
                         key: 'grp',

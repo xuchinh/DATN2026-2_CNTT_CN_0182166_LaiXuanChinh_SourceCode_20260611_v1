@@ -233,7 +233,7 @@ const ElectricityBillTable = (props: IProps) => {
     return (
         <>
             <div
-                className="flex justify-between items-center mb-5"
+                className="flex flex-col gap-3 mb-5"
             >
                 <span>Danh sách phòng</span>
                 <div className="flex gap-3">

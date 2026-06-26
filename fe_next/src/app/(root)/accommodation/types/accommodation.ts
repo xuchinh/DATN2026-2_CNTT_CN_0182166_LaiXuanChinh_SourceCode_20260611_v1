@@ -29,4 +29,5 @@ export type TypeRoomProp = {
     toDate: Date;
     paymentsDate: Date
     statusPayment: boolean;
+    images?: string[];
 };

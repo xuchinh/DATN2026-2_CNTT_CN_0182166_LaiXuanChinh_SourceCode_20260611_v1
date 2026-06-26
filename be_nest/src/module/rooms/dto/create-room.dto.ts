@@ -27,4 +27,6 @@ export class CreateRoomDto {
     payment: string;
     @IsOptional()
     statusPayment: string;
+    @IsOptional()
+    images?: string[];
 }

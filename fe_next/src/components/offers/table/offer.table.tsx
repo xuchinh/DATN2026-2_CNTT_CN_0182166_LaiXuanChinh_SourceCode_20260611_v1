@@ -138,7 +138,7 @@ const OfferTable = (props: IProps) => {
                 //     alignItems: "center",
                 //     marginBottom: 20
                 // }}
-                className="flex justify-between items-center mb-5"
+                className="flex flex-col gap-3 mb-5"
             >
                 <span>Danh sách khuyến mãi</span>
                 <div className="flex gap-3">
