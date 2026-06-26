@@ -143,17 +143,7 @@ Sau đó mở trình duyệt: **http://localhost:3000**
 
 ---
 
-## 7. Xử lý lỗi thường gặp
-
-- **Frontend không gọi được API / lỗi mạng** → kiểm tra backend đã chạy ở cổng 8080 chưa và `NEXT_PUBLIC_BACKEND_URL` trong `fe_next/.env` có đúng không.
-- **Backend báo lỗi kết nối MongoDB** → kiểm tra Docker MongoDB đã chạy (`docker ps`) và `MONGODB_URI` đúng cổng `27018`.
-- **Cổng bị chiếm (EADDRINUSE)** → đổi `PORT` trong `.env` (backend) hoặc chạy `npm run dev -- -p 3001` (frontend).
-- **Không gửi được email kích hoạt** → kiểm tra `MAIL_USER` / `MAIL_PASSWORD` (phải là App Password của Gmail, đã bật xác minh 2 bước).
-- **Cài `npm install` lỗi** → xóa `node_modules` và `package-lock.json` rồi cài lại; đảm bảo Node ≥ 18.
-
----
-
-## 8. Công nghệ chính
+## 7. Công nghệ chính
 
 **Backend:** NestJS 11, Mongoose 8, Passport (JWT + Local), bcrypt, Nodemailer.
 **Frontend:** Next.js 14, React 18, Ant Design 5, Tailwind CSS 3, Recharts, Leaflet (bản đồ).
